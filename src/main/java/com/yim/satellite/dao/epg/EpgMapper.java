@@ -1,0 +1,22 @@
+package com.yim.satellite.dao.epg;
+/**
+*@author:   yim
+*@date:  2018年3月14日下午4:05:44
+*@description:   
+*/
+
+import java.util.List;
+
+import com.yim.satellite.domain.epg.Epg;
+
+public interface EpgMapper {
+
+	List<Epg> selectEpgFrom_1055e();
+	
+	List<Epg> selectEpgFrom_50w();
+	
+	List<Epg> selectStartTimeFrom_1055e();
+	
+	List<Epg> selectStartTimeFrom_50w();
+	
+}

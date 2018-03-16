@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yim.satellite.dao.cms.ScheduleMapper">
+	<sql id="cmsColumns">
+		programname, 
+		releaasestatus, 
+		startdate, 
+		starttime, 
+		duration, 
+		description, 
+		airstarttime,
+		 airendtime, 
+		 language, 
+		 satellite, 
+		 channelcode, 
+		 releasetime, 
+		 status
+	</sql>
+
+	<insert id="insertFromEpg_1055e" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
+		insert into schedule
+		(
+		<include refid="cmsColumns"/>
+		) 
+		 values 
+		 <foreach collection="list" item="item" index="index" separator=",">
+		 	(
+		 	#{item.programName}, 
+		 	1, 
+		 	DATE_FORMAT(#{item.startTime, jdbcType=datetime} + interval 8 hour, &apos;%Y-%m-%d 00:00:00&apos; ), 
+		 	DATE_FORMAT(#{item.startTime}, &apos;%H%i%s&apos; ), 
+		 	IF(#{item.duration} &gt;= 3600, SEC_TO_TIME(#{item.duration}), CONCAT(&apos; 00 &apos; , SEC_TO_TIME(#{item.duration}))), 
+		 	IF(#{item.extendedDescription} = &apos;&apos;, #{item.shortDescription}, #{item.extendedDescription}), 
+		 	#{item.startTime, jdbcType=varchar} + interval 8 hour, 
+		 	FROM_UNIXTIME(UNIX_TIMESTAMP(#{item.startTime}) + #{item.duration}), 
+		 	#{item.language}, 
+		 	#{item.satellite}, 
+		 	#{item.channelName}, 
+		 	NOW(), 
+		 	1
+		 	)
+		 </foreach>
+	</insert>
+	
+	<delete id="deleteFrom_1055eStartTime" parameterType="java.util.List">
+		delete from schedule where 
+		<foreach collection="list" item="item" index="index" separator="or">
+			(startdate = #{item.startDate} and satellite = #{item.satellite})
+		</foreach>
+		 limit 1000
+	</delete>
+	
+	<delete id="deleteFrom_50wStartTime" parameterType="java.util.List">
+		delete from schedule where 
+		<foreach collection="list" item="item" index="index" separator="or">
+			(startdate = #{item.startDate} and satellite = #{item.satellite})
+		</foreach>
+		 limit 1000
+	</delete>
+	
+</mapper>
