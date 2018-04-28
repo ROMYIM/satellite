@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yim.satellite.dao.epg.EpgMapper">
+	<resultMap type="com.yim.satellite.domain.epg.Epg" id="cmsResultMap">
+		<id property="id" column="id"/>
+		 <result property="frequency" column="freq"/>
+		 <result property="serviceId" column="service_id"/>
+		 <result property="channelName" column="channel_name"/>
+		 <result property="startTime" column="start_time"/>
+		 <result property="duration" column="duration"/>
+		 <result property="programName" column="prog_name"/>
+		 <result property="language" column="language"/>
+		 <result property="shortDescription" column="short_desc"/>
+		 <result property="extendedDescription" column="extended_desc"/>
+	</resultMap>
+	<select id="selectEpgFrom_1055e" resultMap="cmsResultMap">
+		select * from 1055e where prog_name is not null
+	</select>
+	
+	<select id="selectEpgFrom_50w" resultMap="cmsResultMap">
+		select * from 50w where prog_name is not null
+	</select>
+</mapper>

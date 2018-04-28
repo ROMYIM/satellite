@@ -1,0 +1,17 @@
+package com.yim.satellite.dao.cmsp2p;
+
+import java.util.List;
+
+import com.yim.satellite.domain.epg.Epg;
+import com.yim.satellite.model.EpgModel;
+
+/** 	 	
+*@author:   yim
+*@date:  2018年3月14日下午12:10:50
+*@description:   
+*/
+public interface P2pScheduleMapper {
+	int insertIntoSchedule(List<Epg> epgs);
+	
+	int deleteFromEpg(List<EpgModel> epgModels);
+}

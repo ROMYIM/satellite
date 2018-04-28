@@ -1,0 +1,251 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>日志查看</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link th:href="@{css/bootstrap.css}" rel="stylesheet" type="text/css" media="all"/>  
+        <link th:href="@{css/style.css}" rel="stylesheet" type="text/css" media="all"/> 
+        <link th:href="@{css/hover.css}" rel="stylesheet" type="text/css" media="all"/> 
+    </head>
+    <body>
+            <div class="header-main">
+					<div class="header-left">
+							<div class="logo-name">
+									 <a href="index.html"> <h1>日志查询</h1> 
+									<!--<img id="logo" src="" alt="Logo"/>--> 
+								  </a> 								
+                            </div>
+                            <select id="target_db" class="search-box">
+                                <option>请选择目标数据库</option>
+                                <option>cms</option>
+                                <option>p2p</option>
+                            </select>
+							<!--search-box-->
+								<!-- <div class="search-box">
+									<form>
+										<input type="text" placeholder="查询目标数据库" required=""/>	
+										<input type="submit" value=""/>					
+									</form>
+                                </div> -->
+                                <!--//end-search-box-->
+						 </div>
+						 <div class="header-right">
+                            <!--notifications of menu start -->
+							<!-- <div class="profile_details_left">
+								<ul class="nofitications-dropdown">
+									<li class="dropdown head-dpdn">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-envelope"></i><span class="badge">3</span></a>
+										<ul class="dropdown-menu">
+											<li>
+												<div class="notification_header">
+													<h3>You have 3 new messages</h3>
+												</div>
+											</li>
+											<li><a href="#">
+											   <div class="user_img"><img src="images/p4.png" alt=""/></div>
+											   <div class="notification_desc">
+												<p>Lorem ipsum dolor</p>
+												<p><span>1 hour ago</span></p>
+												</div>
+											   <div class="clearfix"></div>	
+											</a></li>
+											<li class="odd"><a href="#">
+												<div class="user_img"><img src="images/p2.png" alt=""/></div>
+											   <div class="notification_desc">
+												<p>Lorem ipsum dolor </p>
+												<p><span>1 hour ago</span></p>
+												</div>
+											  <div class="clearfix"></div>	
+											</a></li>
+											<li><a href="#">
+											   <div class="user_img"><img src="images/p3.png" alt=""/></div>
+											   <div class="notification_desc">
+												<p>Lorem ipsum dolor</p>
+												<p><span>1 hour ago</span></p>
+												</div>
+											   <div class="clearfix"></div>	
+											</a></li>
+											<li>
+												<div class="notification_bottom">
+													<a href="#">See all messages</a>
+												</div> 
+											</li>
+										</ul>
+									</li>
+									<li class="dropdown head-dpdn">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-bell"></i><span class="badge blue">3</span></a>
+										<ul class="dropdown-menu">
+											<li>
+												<div class="notification_header">
+													<h3>You have 3 new notification</h3>
+												</div>
+											</li>
+											<li><a href="#">
+												<div class="user_img"><img src="images/p5.png" alt=""/></div>
+											   <div class="notification_desc">
+												<p>Lorem ipsum dolor</p>
+												<p><span>1 hour ago</span></p>
+												</div>
+											  <div class="clearfix"></div>	
+											 </a></li>
+											 <li class="odd"><a href="#">
+												<div class="user_img"><img src="images/p6.png" alt=""/></div>
+											   <div class="notification_desc">
+												<p>Lorem ipsum dolor</p>
+												<p><span>1 hour ago</span></p>
+												</div>
+											   <div class="clearfix"></div>	
+											 </a></li>
+											 <li><a href="#">
+												<div class="user_img"><img src="images/p7.png" alt=""/></div>
+											   <div class="notification_desc">
+												<p>Lorem ipsum dolor</p>
+												<p><span>1 hour ago</span></p>
+												</div>
+											   <div class="clearfix"></div>	
+											 </a></li>
+											 <li>
+												<div class="notification_bottom">
+													<a href="#">See all notifications</a>
+												</div> 
+											</li>
+										</ul>
+									</li>	
+									<li class="dropdown head-dpdn">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-tasks"></i><span class="badge blue1">9</span></a>
+										<ul class="dropdown-menu">
+											<li>
+												<div class="notification_header">
+													<h3>You have 8 pending task</h3>
+												</div>
+											</li>
+											<li><a href="#">
+												<div class="task-info">
+													<span class="task-desc">Database update</span><span class="percentage">40%</span>
+													<div class="clearfix"></div>	
+												</div>
+												<div class="progress progress-striped active">
+													<div class="bar yellow" style="width:40%;"></div>
+												</div>
+											</a></li>
+											<li><a href="#">
+												<div class="task-info">
+													<span class="task-desc">Dashboard done</span><span class="percentage">90%</span>
+												   <div class="clearfix"></div>	
+												</div>
+												<div class="progress progress-striped active">
+													 <div class="bar green" style="width:90%;"></div>
+												</div>
+											</a></li>
+											<li><a href="#">
+												<div class="task-info">
+													<span class="task-desc">Mobile App</span><span class="percentage">33%</span>
+													<div class="clearfix"></div>	
+												</div>
+											   <div class="progress progress-striped active">
+													 <div class="bar red" style="width: 33%;"></div>
+												</div>
+											</a></li>
+											<li><a href="#">
+												<div class="task-info">
+													<span class="task-desc">Issues fixed</span><span class="percentage">80%</span>
+												   <div class="clearfix"></div>	
+												</div>
+												<div class="progress progress-striped active">
+													 <div class="bar  blue" style="width: 80%;"></div>
+												</div>
+											</a></li>
+											<li>
+												<div class="notification_bottom">
+													<a href="#">See all pending tasks</a>
+												</div> 
+											</li>
+										</ul>
+									</li>	
+								</ul>
+								<div class="clearfix"> </div>
+							</div> -->
+							<!--notification menu end -->
+							<div class="profile_details_left">
+                                <select id="select_table" class="search-box">
+                                    <option itemid="all">请选择表</option>
+                                    <option itemid="1055e">1055e</option>
+                                    <option itemid="130e">130e</option>
+                                    <option itemid="192e">192e</option>
+                                    <option itemid="50w">50w</option>
+                                    <option itemid="6875c">6875c</option>
+                                    <option itemid="70w">70w</option>
+                                    <option itemid="75w">75w</option>
+                                    <option itemid="80w">80w</option>
+                                </select>	
+                                <div class="profile_details">
+                                    <input type="button" class="hvr-push" value="搜索" onclick="findLogsByTableName"/>
+                                </div>	
+								<!-- <ul>
+									<li class="dropdown profile_details_drop">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+											<div class="profile_img">	
+												<span class="prfil-img"><img src="images/p1.png" alt=""/> </span> 
+												<div class="user-name">
+													<p>Malorum</p>
+													<span>Administrator</span>
+												</div>
+												<i class="fa fa-angle-down lnr"></i>
+												<i class="fa fa-angle-up lnr"></i>
+												<div class="clearfix"></div>	
+											</div>	
+										</a>
+										<ul class="dropdown-menu drp-mnu">
+											<li> <a href="#"><i class="fa fa-cog"></i> Settings</a> </li> 
+											<li> <a href="#"><i class="fa fa-user"></i> Profile</a> </li> 
+											<li> <a href="#"><i class="fa fa-sign-out"></i> Logout</a> </li>
+										</ul>
+									</li>
+								</ul> -->
+                            </div>
+							<div class="clearfix"> </div>				
+						</div>
+				     <div class="clearfix"> </div>	
+				</div>   
+        <div class="chit-chat-layer1">
+            <div class="col-md-6 chit-chat-layer1-left">
+                <div class="work-progres">
+                    <div class="chit-chat-heading">
+                        插入日志表
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>表名</th>
+                                    <th>插入数</th>                                   
+                                    <th>删除数</th>                                       
+                                    <th>目标数据库</th>
+                                    <th>操作时长</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="log : ${logList}">
+                                    <td th:text="${log.id}">1</td>
+                                    <td th:text="${log.tableName}">Face book</td>
+                                    <td th:text="${log.insertCount}">Malorum</td>                                                             
+                                    <td th:text="${log.deleteCount}">deleteCount</td>
+                                    <td><span class="label label-danger" th:text="${log.targetDataBase}">targetDataBase</span></td>
+                                    <td><span class="badge badge-info" th:text="${log.duration}">duration</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        function findLogsByTableName() {
+            var objSelectTable = document.getElementById('select_table');
+            var tableName = objSelectTable.options[objSelectTable.selectedIndex].value;
+            location.href = '';
+        }
+    </script>
+</html>

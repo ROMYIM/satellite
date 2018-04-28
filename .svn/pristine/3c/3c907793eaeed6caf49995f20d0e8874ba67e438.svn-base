@@ -1,0 +1,11 @@
+package com.yim.satellite.dao.cms;
+/**
+*@author:   yim
+*@date:  2018年3月14日下午12:10:50
+*@description:   
+*/
+public interface ScheduleMapper {
+	int insertFromEpg_1055e();
+	
+	int insertFromEpg_50w();
+}

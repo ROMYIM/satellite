@@ -1,0 +1,30 @@
+package com.iptv.satellite.service;
+
+import java.util.List;
+
+import com.iptv.satellite.domain.db.EpgBean;
+import com.iptv.satellite.domain.model.EpgModelBean;
+
+/**
+*@author:   yim
+*@date:  2018年3月18日下午4:27:33
+*@description:   Schedule表的service接口。
+*/
+public interface ICmsService {
+	
+	/**
+	 * 向schedule表批量添加数据
+	 * @param epgs  添加的数据
+	 * @return  返回数据库操作的行数
+	 */
+	int addNewIntoSchedule(List<EpgBean> epgs);
+	
+	/**
+	 * 向schedule表删除时间上重复的数据
+	 * @param epgModels  用于判定时间重复的条件数据
+	 * @return  返回数据库操作的行数
+	 */
+	int deleteOldFromEpg(List<EpgModelBean> epgModels);
+	
+	int findFirstFromSchedule();
+}

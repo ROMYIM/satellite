@@ -1,0 +1,18 @@
+package com.yim.satellite.service;
+
+import java.util.List;
+
+import com.yim.satellite.domain.epg.Log;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午5:54:32
+*@description:   
+*/
+public interface ILogService {
+	int addLog(Log log);
+	
+	List<Log> findLogByTable(String tableName);
+	
+	List<Log> findLogByTableAndTarget(String tableName, String targetDb);
+}

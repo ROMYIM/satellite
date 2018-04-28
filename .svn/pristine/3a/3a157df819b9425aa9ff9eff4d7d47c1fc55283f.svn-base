@@ -1,0 +1,22 @@
+package com.yim.satellite.service;
+
+import java.math.BigInteger;
+import java.util.List;
+
+import com.yim.satellite.domain.epg.Epg;
+import com.yim.satellite.model.EpgModel;
+
+/**
+*@author:   yim
+*@date:  2018年3月14日下午4:47:51
+*@description:   
+*/
+public interface IEpgService {
+	List<Epg> findEpgFrom_1055e();
+	
+	BigInteger findMaxIdFrom1055e();
+	
+	List<EpgModel> findOldEpgFrom_1055e(BigInteger maxId);
+	
+	List<EpgModel> findOldEpgFrom_50w();
+}

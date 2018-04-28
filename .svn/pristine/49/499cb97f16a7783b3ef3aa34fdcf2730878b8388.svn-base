@@ -1,0 +1,68 @@
+package com.yim.satellite.model;
+/**
+*@author:   yim
+*@date:  2018年3月20日下午12:17:23
+*@description:   
+*/
+
+import java.math.BigInteger;
+
+public class EpgTableModel {
+	private final String tableName;
+	private BigInteger currentMaxId;
+	private int cmsInsertCount;
+	private int p2pInsertCount;
+	private int deleteCount;
+	
+	
+
+	public int getCmsInsertCount() {
+		return cmsInsertCount;
+	}
+
+	public void setCmsInsertCount(int cmsInsertCount) {
+		this.cmsInsertCount = cmsInsertCount;
+	}
+
+	public int getP2pInsertCount() {
+		return p2pInsertCount;
+	}
+
+	public void setP2pInsertCount(int p2pInsertCount) {
+		this.p2pInsertCount = p2pInsertCount;
+	}
+
+	public int getDeleteCount() {
+		return deleteCount;
+	}
+
+	public void setDeleteCount(int deleteCount) {
+		this.deleteCount = deleteCount;
+	}
+
+	public EpgTableModel(String tableName) {
+		this.tableName = tableName;
+		this.currentMaxId = BigInteger.valueOf(0);
+		this.deleteCount = 0;
+		this.cmsInsertCount = 0;
+		this.p2pInsertCount = 0;
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "表名：" + this.tableName + "   删除数：" + this.deleteCount + "   cms插入数：" + cmsInsertCount + "   p2p插入数：" + p2pInsertCount;
+	}
+
+	public BigInteger getCurrentMaxId() {
+		return currentMaxId;
+	}
+
+	public void setCurrentMaxId(BigInteger currentMaxId) {
+		this.currentMaxId = currentMaxId;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+}

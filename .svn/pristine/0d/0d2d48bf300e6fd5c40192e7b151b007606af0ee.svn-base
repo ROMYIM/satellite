@@ -1,0 +1,58 @@
+package com.iptv.satellite.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.iptv.satellite.dao.cmsp2p.P2pScheduleMapper;
+import com.iptv.satellite.domain.db.EpgBean;
+import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.service.ICmsService;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午12:16:06
+*@description:   p2p schedule表的service实现类。
+*                                  重写的两个方法才是真正的调用，其余的方法仅做测试。
+*/
+@Service("cmsp2pService")
+public class Cmsp2pService implements ICmsService {
+	
+	/**
+	 * p2p schedule表的持久层接口依赖注入
+	 */
+	@Autowired
+	private P2pScheduleMapper scheduleDAO;
+	
+	@Override
+	public int addNewIntoSchedule(List<EpgBean> epgs) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.insertIntoSchedule(epgs);
+	}
+
+	@Override
+	public int deleteOldFromEpg(List<EpgModelBean> epgModels) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.deleteFromEpg(epgModels);
+	}
+	
+	public List<Integer> findOldIdFromSchedule(List<EpgModelBean> epgModels, Integer pageNum, Integer pageSize) {
+		Map<String, Object> paramsMap = new HashMap<>();
+		paramsMap.put("pageNum", pageNum);
+		paramsMap.put("pageSize", pageSize);
+		paramsMap.put("list", epgModels);
+		return scheduleDAO.selectOldIdFromSchedule(paramsMap);
+	}
+	
+	public int findCountFromSchedule() {
+		return scheduleDAO.selectCountFromSchedule();
+	}
+	
+	public int deleteById(List<Integer> idList) {
+		return scheduleDAO.deleteByScheduleId(idList);
+	}
+
+}

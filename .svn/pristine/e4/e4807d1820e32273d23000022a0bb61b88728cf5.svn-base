@@ -1,0 +1,54 @@
+package com.yim.satellite.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.yim.satellite.dao.cmsp2p.P2pScheduleMapper;
+import com.yim.satellite.domain.epg.Epg;
+import com.yim.satellite.model.EpgModel;
+import com.yim.satellite.service.ICmsService;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午12:16:06
+*@description:   
+*/
+@Service("cmsp2pService")
+public class Cmsp2pService implements ICmsService {
+
+	@Autowired
+	private P2pScheduleMapper scheduleDAO;
+	
+	@Override
+	public int addNewIntoSchedule(List<Epg> epgs) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.insertIntoSchedule(epgs);
+	}
+
+	@Override
+	public int deleteOldFromEpg(List<EpgModel> epgModels) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.deleteFromEpg(epgModels);
+	}
+	
+	public List<Integer> findOldIdFromSchedule(List<EpgModel> epgModels, Integer pageNum, Integer pageSize) {
+		Map<String, Object> paramsMap = new HashMap<>();
+		paramsMap.put("pageNum", pageNum);
+		paramsMap.put("pageSize", pageSize);
+		paramsMap.put("list", epgModels);
+		return scheduleDAO.selectOldIdFromSchedule(paramsMap);
+	}
+	
+	public int findCountFromSchedule() {
+		return scheduleDAO.selectCountFromSchedule();
+	}
+	
+	public int deleteById(List<Integer> idList) {
+		return scheduleDAO.deleteByScheduleId(idList);
+	}
+
+}

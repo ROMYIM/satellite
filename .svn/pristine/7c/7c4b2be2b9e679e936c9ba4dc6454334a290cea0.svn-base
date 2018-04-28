@@ -1,0 +1,92 @@
+package com.yim.satellite.domain.epg;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午2:10:21
+*@description:   
+*/
+public class Log {
+	private Integer id;
+	private String tableName;
+	private Integer insertCount;
+	private Integer deleteCount;
+	private String targetDataBase;
+	private String duration;
+	private String operateTime;
+	
+	public Log() {
+		super();
+	}
+	
+	public Log(String tableName, String  targetDataBase) {
+		super();
+		this.tableName = tableName;
+		this.insertCount = 0;
+		this.deleteCount = 0;
+		this.targetDataBase =  targetDataBase;
+		this.duration = "0:00.000";
+		this.operateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
+	}
+
+	public String getOperateTime() {
+		return operateTime;
+	}
+
+	public void setOperateTime(String operateTime) {
+		this.operateTime = operateTime;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public String getTableName() {
+		return tableName;
+	}
+	
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+	
+	public Integer getInsertCount() {
+		return insertCount;
+	}
+	
+	public void setInsertCount(Integer insertCount) {
+		this.insertCount = insertCount;
+	}
+	
+	public Integer getDeleteCount() {
+		return deleteCount;
+	}
+	
+	public void setDeleteCount(Integer deleteCount) {
+		this.deleteCount = deleteCount;
+	}
+	
+	public String getTargetDataBase() {
+		return  targetDataBase;
+	}
+	public void setTargetDataBase(String  targetDataBase) {
+		this. targetDataBase =  targetDataBase;
+	}
+	
+	public String getDuration() {
+		return duration;
+	}
+	
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+
+	public void setDuration(long timeStamp) {
+		this.duration = new SimpleDateFormat("mm:ss.SSS").format(timeStamp);
+	}
+}

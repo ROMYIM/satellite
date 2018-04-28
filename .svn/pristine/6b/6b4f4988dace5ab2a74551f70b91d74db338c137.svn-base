@@ -1,0 +1,75 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+      exclude: WEB-INF/**
+
+  thymeleaf: 
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/
+    encoding: utf-8
+    content-type: text/html
+    mode: HTML5
+
+
+  datasource:
+    epg:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://192.168.7.27:3306/epg?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: root
+      password: 123456
+
+    cms:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://192.168.7.27:3306/cms?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true
+      username: root
+      password: 123456
+
+    cmsp2p:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://192.168.7.27:3306/cmsp2p?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true
+      username: root
+      password: 123456
+      
+    log:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://192.168.7.27:3306/log?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true
+      username: root
+      password: 123456
+
+    filters: stat
+    maxActive: 50
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    waitTimeout: 300000000
+    
+
+server:
+  port: 7070
+  context-path: /satellite
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.yim.satellite.domain
+
+mapper: 
+  mapper:
+    identity: MYSQL
+    not-empty: false
+
+# logging:
+#   level:
+#     com:
+#       yim:
+#         satellite:
+#           dao: DEBUG

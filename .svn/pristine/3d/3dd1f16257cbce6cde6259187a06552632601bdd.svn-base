@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iptv.satellite.dao.log.LogMapper">
+	<resultMap type="com.iptv.satellite.domain.db.LogBean" id="logMap">
+		<id property="id" column="id"/>
+		<result property="tableName" column="table_name"/>
+		<result property="insertCount" column="insert_count"/>
+		<result property="deleteCount" column="delete_count"/>
+		<result property="targetDataBase" column="target_db"/>
+		<result property="duration" column="duration"/>
+		<result property="operateTime" column="operate_time"/>
+	</resultMap>
+	
+	<sql id="logColumns">
+		table_name, insert_count, delete_count, target_db, duration, operate_time 
+	</sql>
+	<insert id="insertNewLog" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.iptv.satellite.domain.db.LogBean">
+		insert into log
+		(
+		<include refid="logColumns"/>
+		) values (#{tableName}, #{insertCount}, #{deleteCount}, #{targetDataBase}, #{duration}, #{operateTime})
+	</insert>
+	
+	<select id="selectLogsByTable" resultMap="logMap">
+		select * from log where table_name = #{tableName} limit #{pageNum}, #{pageSize}
+	</select>
+	
+	<select id="selectLogsByTableAndTarget" resultMap="logMap">
+		select * from log where table_name = #{tableName} and target_db = #{targetDb} limit #{pageNum}, #{pageSize}
+	</select>
+	
+	<select id="selectAllLogsByPages" resultMap="logMap">
+		select * from log limit #{pageNum}, #{pageSize}
+	</select>
+	
+	<select id="selectLogsByTargetDb" resultMap="logMap">
+		select * from log where target_db = #{targetDb} limit #{pageNum}, #{pageSize}
+	</select>
+</mapper>

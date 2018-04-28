@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yim.satellite.dao.cmsp2p.P2pScheduleMapper">
+	<resultMap type="com.yim.satellite.domain.cms.Schedule" id="cmsScheduleMap">
+		<id property="id" column="id"/>
+		<result property="airEndTime" column="airendtime"/>
+		<result property="channelCode" column="channelcode"/>
+		<result property="airStartTime" column="airstarttime"/>
+		<result property="channelId" column="channelid"/>
+		<result property="cpContentId" column="cpcontentid"/>
+		<result property="cpSpid" column="cpspid"/>
+		<result property="deleteTime" column="deletetime"/>
+		<result property="description" column="description"/>
+		<result property="duration" column="duration"/>
+		<result property="objectId" column="objectid"/>
+		<result property="programName" column="programname"/>
+		<result property="releaseStatus" column="releasestatus"/>
+		<result property="startTime" column="starttime"/>
+		<result property="status" column="status"/>
+		<result property="storageDuration" column="storageduration"/>
+		<result property="replay" column="replay"/>
+		<result property="language" column="language"/>
+		<result property="satellite" column="satellite"/>
+	</resultMap>
+	
+	<sql id="cmsColumns">
+		programname, 
+		releasestatus, 
+		startdate, 
+		starttime, 
+		duration, 
+		description, 
+		airstarttime,
+		 airendtime, 
+		 language, 
+		 satellite, 
+		 channelcode, 
+		 releasetime, 
+		 status
+	</sql>
+
+	<insert id="insertIntoSchedule" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="java.util.List">
+		insert into schedule
+		(
+		<include refid="cmsColumns"/>
+		) 
+		 values 
+		 <foreach collection="list" item="item" index="index" separator=",">
+		 	(
+		 	#{item.programName}, 
+		 	1, 
+		 	DATE_FORMAT(#{item.startTime} + interval 8 hour, &apos;%Y-%m-%d 00:00:00&apos; ), 
+		 	DATE_FORMAT(#{item.startTime} + interval 8 hour, &apos;%H%i%s&apos; ), 
+		 	IF(#{item.duration} &gt;= 3600, SEC_TO_TIME(#{item.duration}) + 0, CONCAT(&apos;00&apos; , SEC_TO_TIME(#{item.duration}) + 0)), 
+		 	IF(#{item.extendedDescription} = &apos;&apos;, #{item.shortDescription}, #{item.extendedDescription}), 
+		 	#{item.startTime} + interval 8 hour, 
+		 	FROM_UNIXTIME(UNIX_TIMESTAMP(#{item.startTime}) + #{item.duration}) + interval 8 hour, 
+		 	#{item.language}, 
+		 	#{item.satellite}, 
+		 	#{item.channelName}, 
+		 	NOW(), 
+		 	1
+		 	)
+		 </foreach>
+	</insert>
+	
+	<delete id="deleteFromEpg" parameterType="java.util.List">
+		<if test="list != null and list.size &gt; 0">
+			delete s.* from schedule as s
+			right join 
+			(
+			<foreach collection="list" item="item" index="index" separator="union all">
+				(select id from schedule where satellite = #{item.satellite} and startdate = #{item.startDate})
+			</foreach>
+			) as m on s.id = m.id
+		</if>
+	</delete>
+	
+</mapper>

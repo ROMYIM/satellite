@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iptv.satellite.dao.epg.EpgMapper">
+	<resultMap type="com.iptv.satellite.domain.db.EpgBean" id="epgResultMap">
+		<id property="id" column="id"/>
+		 <result property="frequency" column="freq"/>
+		 <result property="serviceId" column="service_id"/>
+		 <result property="channelName" column="channel_name"/>
+		 <result property="startTime" column="start_time"/>
+		 <result property="duration" column="duration"/>
+		 <result property="programName" column="prog_name"/>
+		 <result property="language" column="language"/>
+		 <result property="shortDescription" column="short_desc"/>
+		 <result property="extendedDescription" column="extended_desc"/>
+	</resultMap>
+	
+	<select id="selectMaxIdFromEpg" resultType="java.math.BigInteger" >
+		select max(id) from ${tableName} where prog_name != &apos;&apos;
+	</select>
+	
+	<select id="selectOldFromEpg" resultType="com.iptv.satellite.domain.model.EpgModelBean">
+		select DATE_FORMAT(start_time  + interval 8 hour, &apos;%Y-%m-%d 00:00:00&apos;) as startDate, 
+		CONCAT(#{angle} , &apos;:&apos; , CAST((freq / 1000) AS UNSIGNED), &apos;:&apos; , service_id) as satellite 
+		from ${tableName}
+		where id &gt; #{maxId, javaType=BigInteger} 
+		group by startDate, satellite
+	</select>
+	
+	<select id="selectNewFromEpg"  resultMap="epgResultMap">
+		select 
+		channel_name,
+		start_time,
+		duration,
+		prog_name,
+		language, 
+		short_desc,
+		extended_desc, 
+		CONCAT(#{angle} , &apos;:&apos; , CAST((freq / 1000) AS UNSIGNED), &apos;:&apos; , service_id) as satellite 
+		from ${tableName}
+		where id &gt; #{maxId, javaType=BigInteger} 
+		and prog_name != &apos;&apos;
+	</select>
+</mapper>

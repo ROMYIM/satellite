@@ -1,0 +1,18 @@
+package com.yim.satellite.util;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+/**
+*@author:   yim
+*@date:  2018年3月26日下午3:45:05
+*@description:   
+*/
+public class FormatUtil {
+	public static final DecimalFormat NUMBER_FORMAT = (DecimalFormat) NumberFormat.getInstance();
+	
+	public static String formatTimestamp(String format, long timestamp) {
+		NUMBER_FORMAT.applyPattern(format);
+		return NUMBER_FORMAT.format(timestamp);
+	}
+}

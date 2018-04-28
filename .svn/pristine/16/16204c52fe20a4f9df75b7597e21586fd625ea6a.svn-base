@@ -1,0 +1,47 @@
+package com.yim.satellite.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.yim.satellite.dao.epg.LogMapper;
+import com.yim.satellite.domain.epg.Log;
+import com.yim.satellite.service.ILogService;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午5:56:38
+*@description:   
+*/
+@Service
+public class LogService implements ILogService {
+
+	@Autowired
+	private LogMapper logDAO;
+	
+	@Override
+	public int addLog(Log log) {
+		// TODO Auto-generated method stub
+		return logDAO.insertNewLog(log);
+	}
+
+	@Override
+	public List<Log> findLogsByTable(String tableName) {
+		// TODO Auto-generated method stub
+		return logDAO.selectLogsGroupByTable(tableName);
+	}
+
+	@Override
+	public List<Log> findLogsByTableAndTarget(String tableName, String targetDb) {
+		// TODO Auto-generated method stub
+		return logDAO.selectLogsGroupByTableAndTarget(tableName, targetDb);
+	}
+
+	@Override
+	public List<Log> findAllLogs(int pageNum, int pageSize) {
+		// TODO Auto-generated method stub
+		return logDAO.selectAllLogsByPages(pageNum, pageSize);
+	}
+
+}

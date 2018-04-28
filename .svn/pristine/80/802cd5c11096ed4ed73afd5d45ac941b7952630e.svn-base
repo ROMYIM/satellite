@@ -1,0 +1,35 @@
+package com.yim.satellite.config;
+
+import javax.sql.DataSource;
+
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+*@author:   yim
+*@date:  2018年3月14日上午9:55:04
+*@description:   数据源配置
+*/
+@Configuration
+public class DataSourceConfig {
+	
+	@Bean(name = "epgDS")
+	@ConfigurationProperties(prefix = "spring.datasource.epg")
+	public DataSource createEpgDataSource() {
+		return DataSourceBuilder.create().build();
+	}
+	
+	@Bean(name = "cmsDS")
+	@ConfigurationProperties(prefix = "spring.datasource.cms")
+	public DataSource createCmsDataSource() {
+		return DataSourceBuilder.create().build();
+	}
+	
+	@Bean(name = "cmsp2pDS")
+	@ConfigurationProperties(prefix = "spring.datasource.cmsp2p")
+	public DataSource createCmsp2p2DataSource() {
+		return DataSourceBuilder.create().build();
+	}
+}

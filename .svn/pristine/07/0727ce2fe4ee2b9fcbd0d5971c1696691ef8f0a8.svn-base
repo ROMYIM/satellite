@@ -1,0 +1,24 @@
+package com.yim.satellite.dao.epg;
+/**
+*@author:   yim
+*@date:  2018年3月14日下午4:05:44
+*@description:   
+*/
+
+import java.math.BigInteger;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.yim.satellite.domain.db.EpgBean;
+import com.yim.satellite.domain.model.EpgModelBean;
+
+public interface EpgMapper {
+	
+	List<EpgBean> selectNewFromEpg(@Param("angle")String angle, @Param("maxId")BigInteger maxId, @Param("tableName")String tableName);
+	
+	List<EpgModelBean> selectOldFromEpg(@Param("angle")String angle, @Param("tableName")String tableName, @Param("maxId")BigInteger maxId);
+	
+	BigInteger selectMaxIdFromEpg(@Param("tableName")String tableName);
+	
+}

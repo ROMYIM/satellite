@@ -1,0 +1,17 @@
+package com.yim.satellite.service;
+
+import java.util.List;
+
+import com.yim.satellite.domain.db.EpgBean;
+import com.yim.satellite.domain.model.EpgModelBean;
+
+/**
+*@author:   yim
+*@date:  2018年3月18日下午4:27:33
+*@description:   
+*/
+public interface ICmsService {
+	int addNewIntoSchedule(List<EpgBean> epgs);
+	
+	int deleteOldFromEpg(List<EpgModelBean> epgModels);
+}

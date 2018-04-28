@@ -1,0 +1,43 @@
+package com.yim.satellite.dao.epg;
+/**
+*@author:   yim
+*@date:  2018年3月14日下午4:05:44
+*@description:   epg数据库对各表的持久层接口
+*/
+
+import java.math.BigInteger;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.yim.satellite.domain.db.EpgBean;
+import com.yim.satellite.domain.model.EpgModelBean;
+
+public interface EpgMapper {
+	
+	/**
+	 * 根据锚点查询epg表中新的数据
+	 * @param angle  卫星角度，用于生成satellite属性
+	 * @param maxId  锚点值
+	 * @param tableName  epg中要查询的表名
+	 * @return  该表的新数据记录
+	 */
+	List<EpgBean> selectNewFromEpg(@Param("angle")String angle, @Param("maxId")BigInteger maxId, @Param("tableName")String tableName);
+	
+	/**
+	 * 根据锚点查询epg表中新的数据并分组，作为判定schedule表中时间重复的条件数据
+	 * @param angle  卫星角度，用于生成satellite属性
+	 * @param tableName  epg中要查询的表名
+	 * @param maxId  锚点值
+	 * @return  判定schedule表中时间重复的条件数据
+	 */
+	List<EpgModelBean> selectOldFromEpg(@Param("angle")String angle, @Param("tableName")String tableName, @Param("maxId")BigInteger maxId);
+	
+	/**
+	 * 查询当前表中最新记录的id值，用于和锚点进行比较，判定该表是否有新的数据更新
+	 * @param tableName   epg中要查询的表名
+	 * @return   当前表中最新记录的id值
+	 */
+	BigInteger selectMaxIdFromEpg(@Param("tableName")String tableName);
+	
+}

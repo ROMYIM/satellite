@@ -1,0 +1,24 @@
+package com.yim.satellite.dao.epg;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.yim.satellite.domain.db.LogBean;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午4:24:56
+*@description:   
+*/
+public interface LogMapper {
+	int insertNewLog(LogBean log);
+	
+	List<LogBean> selectLogsByTable(@Param("tableName")String tableName, @Param("pageNum")int pageNum, @Param("pageSize")int pageSize);
+	
+	List<LogBean> selectLogsByTableAndTarget(@Param("tableName")String tableName, @Param("targetDb")String targetDb, @Param("pageNum")int pageNum, @Param("pageSize")int pageSize);
+	
+	List<LogBean> selectAllLogsByPages(@Param("pageNum")int pageNum, @Param("pageSize")int pageSize);
+	
+	List<LogBean> selectLogsByTargetDb(@Param("targetDb")String targetDb, @Param("pageNum")int pageNum, @Param("pageSize")int pageSize);
+}

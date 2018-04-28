@@ -1,0 +1,84 @@
+package com.yim.satellite.model;
+
+/**
+*@author:   yim
+*@date:  2018年3月16日下午3:10:04
+*@description:   
+*/
+public class EpgModel {
+	
+	private Integer id;
+	private String programName;
+	private String startTime;
+	private Integer duration;
+	private String shortDescription;
+	private String extendedDescription;
+	private String language;
+	private String channelName;
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getProgramName() {
+		return programName;
+	}
+	public void setProgramName(String programName) {
+		this.programName = programName;
+	}
+	public String getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+	public Integer getDuration() {
+		return duration;
+	}
+	public void setDuration(Integer duration) {
+		this.duration = duration;
+	}
+	
+	public String getShortDescription() {
+		return shortDescription;
+	}
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+	public String getExtendedDescription() {
+		return extendedDescription;
+	}
+	public void setExtendedDescription(String extendedDescription) {
+		this.extendedDescription = extendedDescription;
+	}
+	public String getLanguage() {
+		return language;
+	}
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	public String getChannelName() {
+		return channelName;
+	}
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+	private String startDate;
+	private String satellite;
+	
+	public String getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+	public String getSatellite() {
+		return satellite;
+	}
+	public void setSatellite(String satellite) {
+		this.satellite = satellite;
+	}
+
+}

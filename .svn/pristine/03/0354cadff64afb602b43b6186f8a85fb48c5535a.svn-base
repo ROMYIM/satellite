@@ -1,0 +1,196 @@
+package com.yim.satellite.config;
+
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.stereotype.Component;
+
+import com.yim.satellite.domain.epg.Epg;
+import com.yim.satellite.domain.epg.Log;
+import com.yim.satellite.model.EpgModel;
+import com.yim.satellite.model.EpgTableModel;
+import com.yim.satellite.service.ICmsService;
+import com.yim.satellite.service.IEpgService;
+import com.yim.satellite.service.ILogService;
+
+/**
+*@author:   yim
+*@date:  2018年3月14日下午2:22:43
+*@description:   
+*/
+@Component
+public class ScheduleConfig implements SchedulingConfigurer {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleConfig.class);
+	private static final String DEFAULT_CRON = "0 0/1 * * * ?";
+	private String intervalCron = DEFAULT_CRON;
+	private String timingCron = "0 12 * * * ?";
+	
+	private static EpgTableModel[] epgTableModels = new EpgTableModel[8];
+	
+	@Autowired
+	private IEpgService epgService;
+	
+	@Resource(name = "cmsService")
+	private ICmsService cmsService;
+	
+	@Resource(name = "cmsp2pService")
+	private ICmsService cmsp2pService;
+	
+	@Autowired
+	private ILogService logService;
+	
+	static {
+		epgTableModels[0] = new EpgTableModel("1055e");
+		epgTableModels[1] = new EpgTableModel("130e");
+		epgTableModels[2] = new EpgTableModel("192e");
+		epgTableModels[3] = new EpgTableModel("50w");
+		epgTableModels[4] = new EpgTableModel("6875c");
+		epgTableModels[5] = new EpgTableModel("70w");
+		epgTableModels[6] = new EpgTableModel("75w");
+		epgTableModels[7] = new EpgTableModel("80w");
+	}
+	
+	@Override
+	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		// TODO Auto-generated method stub
+		taskRegistrar.addTriggerTask(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				LOGGER.info("间隔cron:" + intervalCron);
+			}
+		}, new Trigger() {
+			
+			@Override
+			public Date nextExecutionTime(TriggerContext triggerContext) {
+				// TODO Auto-generated method stub
+				CronTrigger trigger = new CronTrigger(intervalCron);
+				Date nextExcutionTime = trigger.nextExecutionTime(triggerContext);
+				return nextExcutionTime;
+			}
+		});
+		
+		taskRegistrar.addCronTask(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				LOGGER.info("定时cron:" + timingCron);
+			}
+		}, timingCron);
+	}
+
+	public void setIntervalCron(String intervalCron) {
+		this.intervalCron = intervalCron;
+	}
+
+	public void setTimingCron(String timingCron) {
+		this.timingCron = timingCron;
+	}
+	
+	private class UpdateCmsTask implements Runnable {
+		
+		private int eachDeleteCount = 300;
+		private int eachInsertCount = 300;
+		
+		private class CmsUpdateLog {
+			int deleteCount = 0;
+			int insertCount = 0;
+			long startTime = 0;
+			long endTime = 0;
+			long duration = 0;
+		}
+		
+		private CmsUpdateLog updateCms(ICmsService service, List<Epg> epgs, List<EpgModel> epgModels, CmsUpdateLog log) {
+			log.startTime = System.currentTimeMillis();
+			if (epgModels != null && epgModels.size() > 0) {
+				if (epgModels.size() > eachDeleteCount) {
+					int epgModelsIndex = 0;
+					for (int j = 0; j < epgModels.size() / eachDeleteCount + 1; j++) {
+						int count = epgModelsIndex + 300 > epgModels.size() ? epgModels.size() : epgModelsIndex + eachDeleteCount;
+						log.deleteCount += service.deleteOldFromEpg(epgModels.subList(epgModelsIndex, count));
+						epgModelsIndex = count;
+					}
+				} else {
+					log.deleteCount = cmsService.deleteOldFromEpg(epgModels);
+				}
+			}
+			
+			if (epgs != null && epgs.size() > 0) {
+				if (epgs.size() > eachInsertCount) {
+					for (int j = 0; j < epgs.size() / eachInsertCount + 1; j++) {
+						int count = log.insertCount + eachInsertCount > epgs.size() ? epgs.size() : log.insertCount + eachInsertCount;
+						log.insertCount += service.addNewIntoSchedule(epgs.subList(log.insertCount, count));
+					}
+				} else {
+					service.addNewIntoSchedule(epgs);
+				}
+			}
+			return log;
+		}
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			long totalStartTime = System.currentTimeMillis();
+			LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(totalStartTime));
+			for (int i = 0; i < epgTableModels.length; i++) {
+				String tableName = epgTableModels[i].getTableName();
+				BigInteger maxId = epgService.findMaxIdFromEpg(tableName);
+				
+				int deleteCount = 0;
+				int cmsInsertCount = 0;
+				int p2pInsertCount = 0;
+				long startTime = 0;
+				long cmsInsertStartTime = 0;
+				long p2pInsertStartTime = 0;
+				
+				if (maxId != null && maxId.compareTo(epgTableModels[i].getCurrentMaxId()) > 0) {
+					startTime = System.currentTimeMillis();
+					List<Epg> epgs = epgService.findNewDataFromEpg(tableName, epgTableModels[i].getCurrentMaxId());
+					List<EpgModel> epgModels = epgService.findOldFromNewData(tableName, epgTableModels[i].getCurrentMaxId());
+					updateCms(cmsService, epgs, epgModels, new CmsUpdateLog());
+					updateCms(cmsp2pService, epgs, epgModels, new CmsUpdateLog());
+				}
+				
+				long endTime = startTime == 0 ? 0 : System.currentTimeMillis();
+				long cmsDuration = p2pInsertStartTime - cmsInsertStartTime + (cmsInsertStartTime - startTime);
+				long p2pDuration = endTime - p2pInsertStartTime + (cmsInsertStartTime - startTime);
+				Log cmsLog = new Log(epgTableModels[i].getTableName(), cmsInsertCount, deleteCount, "cms", cmsDuration);
+				Log p2pLog = new Log(epgTableModels[i].getTableName(), p2pInsertCount, deleteCount, "p2p", p2pDuration);
+				logService.addLog(cmsLog);
+				logService.addLog(p2pLog);
+				epgTableModels[i].setCurrentMaxId(maxId);
+				epgTableModels[i].setDeleteCount(deleteCount);
+				epgTableModels[i].setCmsInsertCount(cmsInsertCount);
+				epgTableModels[i].setP2pInsertCount(p2pInsertCount);
+			}
+			
+			for (EpgTableModel epgTableModel : epgTableModels) {
+				LOGGER.info(epgTableModel.toString());
+			}
+			long totalEndTime = System.currentTimeMillis();
+			long totalDuration = totalEndTime - totalStartTime;
+			if ((totalDuration / 1000) / 60 >= 0) {
+				LOGGER.info("持续时间：" +  totalDuration / 1000/60 + ":" + String.format("%02d", (totalDuration / 1000) % 60) + "." + String.format("%03d", totalDuration % 1000));
+			} else {
+				LOGGER.info("持续时间：" +  totalDuration / 1000/60 + ":" + String.format("%02d", totalDuration / 1000) + "." + String.format("%03d", totalDuration % 1000));
+			}
+		}
+	}
+
+}

@@ -1,0 +1,36 @@
+package com.yim.satellite.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.yim.satellite.dao.cms.ScheduleMapper;
+import com.yim.satellite.domain.db.EpgBean;
+import com.yim.satellite.domain.model.EpgModelBean;
+import com.yim.satellite.service.ICmsService;
+
+/**
+*@author:   yim
+*@date:  2018年3月18日下午4:42:16
+*@description:   
+*/
+@Service("cmsService")
+public class CmsService implements ICmsService {
+	
+	@Autowired
+	private ScheduleMapper scheduleDAO;
+
+	@Override
+	public int addNewIntoSchedule(List<EpgBean> epgs) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.insertIntoSchedule(epgs);
+	}
+
+	@Override
+	public int deleteOldFromEpg(List<EpgModelBean> epgModels) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.deleteFromEpg(epgModels);
+	}
+
+}

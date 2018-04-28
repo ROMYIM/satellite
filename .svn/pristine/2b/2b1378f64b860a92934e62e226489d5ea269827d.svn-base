@@ -1,0 +1,20 @@
+package com.yim.satellite.dao.epg;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.yim.satellite.domain.epg.Log;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午4:24:56
+*@description:   
+*/
+public interface LogMapper {
+	int insertNewLog(Log log);
+	
+	List<Log> selectLogsGroupByTable(@Param("tableName")String tableName);
+	
+	List<Log> selectLogsGroupByTableAndTarget(@Param("tableName")String tableName, @Param("targetDb")String targetDb);
+}

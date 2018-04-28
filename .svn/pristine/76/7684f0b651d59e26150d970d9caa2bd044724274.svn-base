@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yim.satellite.dao.epg.LogMapper">
+	<resultMap type="com.yim.satellite.domain.epg.Log" id="logMap">
+		<id property="id" column="id"/>
+		<result property="tableName" column="table_name"/>
+		<result property="insertCount" column="insert_count"/>
+		<result property="deleteCount" column="delete_count"/>
+		<result property="targetDataBase" column="target_db"/>
+		<result property="duration" column="duration"/>
+	</resultMap>
+	
+	<sql id="logColumns">
+		table_name, insert_count, delete_count, target_db, duration
+	</sql>
+	<insert id="insertNewLog" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.yim.satellite.domain.epg.Log">
+		insert into log
+		(
+		<include refid="logColumns"/>
+		) values (#{tableName}, #{insertCount}, #{deleteCount}, #{targetDataBase}, #{duration})
+	</insert>
+	
+	<select id="selectLogsGroupByTable" resultMap="logMap">
+		select * from log group by #{tableName}
+	</select>
+	
+	<select id="selectLogsGroupByTableAndTarget" resultMap="logMap">
+		select * from log group by #{tableName}, #{targetDb}
+	</select>
+	
+	<select id="selectAllLogsByPages" resultMap="logMap">
+		select * from log
+	</select>
+</mapper>

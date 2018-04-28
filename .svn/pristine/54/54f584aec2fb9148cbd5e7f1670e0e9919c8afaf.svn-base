@@ -1,0 +1,150 @@
+package com.yim.satellite.domain.epg;
+/**
+*@author:   yim
+*@date:  2018年3月14日上午11:47:07
+*@description:   
+*/
+
+import java.math.BigInteger;
+
+public class Epg {
+	private static BigInteger max1055eId;
+	private static BigInteger max130eId;
+	private static BigInteger max192eId;
+	private static BigInteger max50wId;
+	private static BigInteger max6875cId;
+	private static BigInteger max70wId;
+	private static BigInteger max75wId;
+	private static BigInteger max80wId;
+	
+	private BigInteger id;
+	private Integer frequency;
+	private Integer serviceId;
+	private String channelName;
+	private String startTime;
+	private Integer duration;
+	private String programName;
+	private String language;
+	private String shortDescription;
+	private String extendedDescription;
+	private String satelliteAngle;
+	
+	public static BigInteger getMax1055eId() {
+		return max1055eId;
+	}
+	public static void setMax1055eId(BigInteger max1055eId) {
+		Epg.max1055eId = max1055eId;
+	}
+	public static BigInteger getMax130eId() {
+		return max130eId;
+	}
+	public static void setMax130eId(BigInteger max130eId) {
+		Epg.max130eId = max130eId;
+	}
+	public static BigInteger getMax192eId() {
+		return max192eId;
+	}
+	public static void setMax192eId(BigInteger max192eId) {
+		Epg.max192eId = max192eId;
+	}
+	public static BigInteger getMax50wId() {
+		return max50wId;
+	}
+	public static void setMax50wId(BigInteger max50wId) {
+		Epg.max50wId = max50wId;
+	}
+	public static BigInteger getMax6875cId() {
+		return max6875cId;
+	}
+	public static void setMax6875cId(BigInteger max6875cId) {
+		Epg.max6875cId = max6875cId;
+	}
+	public static BigInteger getMax70wId() {
+		return max70wId;
+	}
+	public static void setMax70wId(BigInteger max70wId) {
+		Epg.max70wId = max70wId;
+	}
+	public static BigInteger getMax75wId() {
+		return max75wId;
+	}
+	public static void setMax75wId(BigInteger max75wId) {
+		Epg.max75wId = max75wId;
+	}
+	public static BigInteger getMax80wId() {
+		return max80wId;
+	}
+	public static void setMax80wId(BigInteger max80wId) {
+		Epg.max80wId = max80wId;
+	}
+	public void setExtendedDescription(String extendedDescription) {
+		this.extendedDescription = extendedDescription;
+	}
+	
+	public String getSatelliteAngle() {
+		return satelliteAngle;
+	}
+	public void setSatelliteAngle(String satelliteAngle) {
+		this.satelliteAngle = satelliteAngle;
+	}
+	public BigInteger getId() {
+		return id;
+	}
+	public void setId(BigInteger id) {
+		this.id = id;
+	}
+	public Integer getFrequency() {
+		return frequency;
+	}
+	public void setFrequency(Integer frequency) {
+		this.frequency = frequency;
+	}
+	public Integer getServiceId() {
+		return serviceId;
+	}
+	public void setServiceId(Integer serviceId) {
+		this.serviceId = serviceId;
+	}
+	public String getChannelName() {
+		return channelName;
+	}
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+	public String getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+	public Integer getDuration() {
+		return duration;
+	}
+	public void setDuration(Integer duration) {
+		this.duration = duration;
+	}
+	public String getProgramName() {
+		return programName;
+	}
+	public void setProgramName(String programName) {
+		this.programName = programName;
+	}
+	public String getLanguage() {
+		return language;
+	}
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	public String getShortDescription() {
+		return shortDescription;
+	}
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+	public String getExtendedDescription() {
+		return extendedDescription;
+	}
+	public void setExtendedDecription(String extendedDescription) {
+		this.extendedDescription = extendedDescription;
+	}
+}

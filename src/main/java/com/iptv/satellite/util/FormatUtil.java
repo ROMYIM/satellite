@@ -1,0 +1,55 @@
+package com.iptv.satellite.util;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+import com.iptv.satellite.constant.CronType;
+
+/**
+*@author:   yim
+*@date:  2018年3月26日下午3:45:05
+*@description:   类型，格式转换工具类
+*/
+public class FormatUtil {
+	public static final DecimalFormat NUMBER_FORMAT = (DecimalFormat) NumberFormat.getInstance();
+	
+	/**
+	 * 根据指定格式把时间戳转为字符串
+	 * @param format  字符串格式
+	 * @param timestamp  时间戳
+	 * @return  指定格式的字符串
+	 */
+	public static String formatTimestamp(String format, long timestamp) {
+		NUMBER_FORMAT.applyPattern(format);
+		return NUMBER_FORMAT.format(timestamp);
+	}
+	
+	/**
+	 * 把时间字符串转为指定的cron表达式
+	 * @param time  时间字符串
+	 * @param type  cron表达式类型，定时任务的，还是间隔任务的
+	 * @return  返回cron表达式字符串
+	 */
+	public static String timeToCron(String time, CronType type) {
+		String cron = " * * ?";
+		StringBuffer stringBuffer = new StringBuffer("0 ");
+		Integer hour = Integer.valueOf(time.substring(0, time.indexOf(":")));
+		String minute = time.substring(time.indexOf(":") + 1);
+		if (type == CronType.TIMING) {
+			stringBuffer.append(minute).append(" ").append(hour).append(cron);
+		} else if (type == CronType.INTERVAL) {
+			stringBuffer.append(" ").append("0 0/").append(hour).append(cron);
+		}
+		return stringBuffer.toString();
+	}
+	
+	/**
+	 * 把时间字符串转为指定的时间戳，针对于间隔任务，只截取小时字段做转换
+	 * @param time  时间字符串
+	 * @return 返回的时间戳
+	 */
+	public static long timeToPeriod(String time) {
+		Long period = Long.valueOf(time.substring(0, time.indexOf(":")));
+		return period * 1000 * 60 * 60;
+	}
+}

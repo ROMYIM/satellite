@@ -1,0 +1,9 @@
+package com.yim.satellite.constant;
+/**
+*@author:   yim
+*@date:  2018年3月27日下午5:51:02
+*@description:   
+*/
+public enum CronType {
+	TIMING, INTERVAL;
+}

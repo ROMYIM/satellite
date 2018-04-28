@@ -1,0 +1,48 @@
+package com.yim.satellite.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.yim.satellite.dao.cms.ScheduleMapper;
+import com.yim.satellite.domain.cms.Schedule;
+import com.yim.satellite.model.EpgModel;
+import com.yim.satellite.service.ICmsService;
+
+/**
+*@author:   yim
+*@date:  2018年3月18日下午4:42:16
+*@description:   
+*/
+@Service
+public class CmsService implements ICmsService {
+	
+	@Autowired
+	private ScheduleMapper scheduleDAO;
+
+	@Override
+	public int addNewFrom1055e(List<EpgModel> epgModels) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.insertFromEpg_1055e(epgModels);
+	}
+
+	@Override
+	public int deleteOldFrom1055e(List<EpgModel> epgModels) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.deleteFrom_1055eStartTime(epgModels);
+	}
+
+	@Override
+	public int deleteOldFrom50w(List<EpgModel> epgModels) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.deleteFrom_50wStartTime(epgModels);
+	}
+
+	@Override
+	public List<Schedule> findOldFrom1055e(List<EpgModel> epgModels) {
+		// TODO Auto-generated method stub
+		return scheduleDAO.selectFrom_1055eStartTime(epgModels);
+	}
+
+}

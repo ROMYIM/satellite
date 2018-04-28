@@ -1,0 +1,70 @@
+package com.yim.satellite.domain.epg;
+
+/**
+*@author:   yim
+*@date:  2018年3月23日下午2:10:21
+*@description:   
+*/
+public class Log {
+	private Integer id;
+	private String tableName;
+	private Integer insertCount;
+	private Integer deleteCount;
+	private String targetDataBase;
+	private String duration;
+	
+	public Log() {
+		super();
+	}
+	
+	public Log(String tableName, Integer insertCount, Integer deleteCount, String  targetDataBase, long duration) {
+		super();
+		this.tableName = tableName;
+		this.insertCount = insertCount;
+		this.deleteCount = deleteCount;
+		this.targetDataBase =  targetDataBase;
+		this.setDuration(duration);
+	}
+
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getTableName() {
+		return tableName;
+	}
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+	public Integer getInsertCount() {
+		return insertCount;
+	}
+	public void setInsertCount(Integer insertCount) {
+		this.insertCount = insertCount;
+	}
+	public Integer getDeleteCount() {
+		return deleteCount;
+	}
+	public void setDeleteCount(Integer deleteCount) {
+		this.deleteCount = deleteCount;
+	}
+	public String getTargetDataBase() {
+		return  targetDataBase;
+	}
+	public void setTargetDataBase(String  targetDataBase) {
+		this. targetDataBase =  targetDataBase;
+	}
+	public String getDuration() {
+		return duration;
+	}
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+	private void setDuration(long timeStamp) {
+		StringBuffer stringBuffer = new StringBuffer(7);
+		stringBuffer.append(timeStamp / 1000 / 60).append(":").append(String.format("%02d", timeStamp / 1000)).append(".").append(String.format("%03d", timeStamp % 1000));
+		this.duration = stringBuffer.toString();
+	}
+}
