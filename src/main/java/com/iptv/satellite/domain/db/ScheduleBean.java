@@ -8,6 +8,7 @@ package com.iptv.satellite.domain.db;
 public class ScheduleBean {
 	
 	private Integer id;
+	private String startDate;
 	private String airStartTime;
 	private String airEndTime;
 	private String channelCode;
@@ -16,7 +17,7 @@ public class ScheduleBean {
 	private Integer cpSpid;
 	private String deleteTime;
 	private String description;
-	private Integer duration;
+	private String duration;
 	private String objectId;
 	private String programName;
 	private Integer releaseStatus;
@@ -101,11 +102,11 @@ public class ScheduleBean {
 		this.description = description;
 	}
 
-	public Integer getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 	
-	public void setDuration(Integer duration) {
+	public void setDuration(String duration) {
 		this.duration = duration;
 	}
 	
@@ -187,6 +188,14 @@ public class ScheduleBean {
 	
 	public void setSatellite(String satellite) {
 		this.satellite = satellite;
+	}
+	
+	public String getStartDate() {
+		return startDate;
+	}
+	
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
 	}
 	
 }

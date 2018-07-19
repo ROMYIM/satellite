@@ -39,7 +39,7 @@
 	</select>
 	
 	<select id="selectFirstFromLog" resultType="int">
-		select id from log limit 1
+		select l.id from log as l where exists (select id from log where id > 0) limit 1
 	</select>
 	
 	<select id="selectLogsCount" resultType="int">

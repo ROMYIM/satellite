@@ -7,11 +7,17 @@ package com.iptv.satellite.util;
 public class SatelliteUtil {
 	public static String getSatelliteAngle(String tableName) {
 		char c = tableName.charAt(tableName.length() - 1);
+		Integer angle = 0;
 		switch (c) {
+		case 'E':
+			return tableName.substring(0, tableName.length() - 1);
 		case 'e':
 			return tableName.substring(0, tableName.length() - 1);
+		case 'W':
+			angle = Integer.valueOf(tableName.substring(0, tableName.length() - 1));
+			return String.valueOf(3600 - angle);
 		case 'w':
-			Integer angle = Integer.valueOf(tableName.substring(0, tableName.length() - 1));
+			angle = Integer.valueOf(tableName.substring(0, tableName.length() - 1));
 			return String.valueOf(3600 - angle);
 		default:
 			return tableName;

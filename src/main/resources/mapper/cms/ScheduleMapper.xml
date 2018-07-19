@@ -32,22 +32,47 @@
 		duration, 
 		description, 
 		airstarttime,
-		 airendtime, 
-		 language, 
-		 satellite, 
-		 channelcode, 
-		 releasetime, 
-		 status
+		airendtime, 
+		language, 
+		satellite, 
+		channelcode, 
+		releasetime, 
+		status
 	</sql>
+	
+	<insert id="insertIntoCmsFromSchedule"  useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="java.util.List">
+		insert into schedule
+		(
+			<include refid="cmsColumns"/>
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(
+			#{item.programName},
+			#{item.releaseStatus},
+			#{item.startDate},
+			#{item.startTime},
+			#{item.duration},
+			#{item.description},
+			#{item.airStartTime},
+			#{item.airEndTime},
+			#{item.language},
+			#{item.satellite},
+			#{item.channelCode},
+			#{item.releaseTime},
+			#{item.status}
+		)
+		</foreach>
+	</insert>
 
 	<insert id="insertIntoSchedule" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="java.util.List">
 		insert into schedule
 		(
-		<include refid="cmsColumns"/>
+			<include refid="cmsColumns"/>
 		) 
-		 values 
-		 <foreach collection="list" item="item" index="index" separator=",">
-		 	(
+		values 
+		<foreach collection="list" item="item" index="index" separator=",">
+		(
 		 	#{item.programName}, 
 		 	1, 
 		 	DATE_FORMAT(#{item.startTime} + interval 8 hour, &apos;%Y-%m-%d 00:00:00&apos; ), 
@@ -61,8 +86,8 @@
 		 	#{item.channelName}, 
 		 	NOW(), 
 		 	1
-		 	)
-		 </foreach>
+		)
+		</foreach>
 	</insert>
 	
 	<delete id="deleteFromEpg" parameterType="java.util.List">
@@ -78,7 +103,7 @@
 	</delete>
 	
 	<select id="selectFirstFromSchedule" resultType="int">
-		select id from schedule limit 1
+		select s.id from schedule as s where exists (select id from schedule where id > 0) limit 1
 	</select>
 	
 </mapper>

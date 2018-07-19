@@ -40,7 +40,7 @@ public class DataSourceConfig {
 	 * @return
 	 */
 	@Bean(name = "cmsp2pDS")
-	@ConfigurationProperties(prefix = "spring.datasource.cmsp2p")
+	@ConfigurationProperties(prefix = "spring.datasource.p2p")
 	public DataSource createCmsp2p2DataSource() {
 		return DataSourceBuilder.create().build();
 	}

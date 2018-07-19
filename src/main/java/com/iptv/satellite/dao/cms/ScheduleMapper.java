@@ -3,6 +3,7 @@ package com.iptv.satellite.dao.cms;
 import java.util.List;
 
 import com.iptv.satellite.domain.db.EpgBean;
+import com.iptv.satellite.domain.db.ScheduleBean;
 import com.iptv.satellite.domain.model.EpgModelBean;
 
 /** 	 	
@@ -18,6 +19,9 @@ public interface ScheduleMapper {
 	 * @return              对数据库操作的行数
 	 */
 	int insertIntoSchedule(List<EpgBean> epgs);
+	
+	
+	int insertIntoCmsFromSchedule(List<ScheduleBean> scheduleBeans);
 	
 	/**
 	 * 对schedule的删除操作

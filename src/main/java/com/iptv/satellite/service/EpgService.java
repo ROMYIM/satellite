@@ -25,27 +25,23 @@ public class EpgService implements IEpgService {
 
 	@Override
 	public BigInteger findMaxIdFromEpg(String tableName) {
-		// TODO Auto-generated method stub
 		return epgMapper.selectMaxIdFromEpg(tableName);
 	}
 
 	@Override
 	public List<EpgBean> findNewDataFromEpg(String tableName, BigInteger maxId) {
-		// TODO Auto-generated method stub
 		String angle = SatelliteUtil.getSatelliteAngle(tableName);
 		return epgMapper.selectNewFromEpg(angle, maxId, tableName);
 	}
 
 	@Override
 	public List<EpgModelBean> findOldFromNewData(String tableName, BigInteger maxId) {
-		// TODO Auto-generated method stub
 		String angle = SatelliteUtil.getSatelliteAngle(tableName);
 		return epgMapper.selectOldFromEpg(angle, tableName, maxId);
 	}
 
 	@Override
 	public BigInteger findFirstFromEpg() {
-		// TODO Auto-generated method stub
 		return epgMapper.selectFirstFromEpg();
 	}
 

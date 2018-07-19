@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.iptv.satellite.domain.db.EpgBean;
+import com.iptv.satellite.domain.db.ScheduleBean;
 import com.iptv.satellite.domain.model.EpgModelBean;
 
 /** 	 	
@@ -19,6 +20,13 @@ public interface P2pScheduleMapper {
 	 * @return  数据库中的操作行数
 	 */
 	int insertIntoSchedule(List<EpgBean> epgs);
+
+	/**
+	 * 对schedule表的插入操作，插入的数据是已经转换好的scheduleBean
+	 * @param scheduleBeans 需要插入的数据
+	 * @return  数据库中的操作数
+	 */
+	int insertIntoP2pFromSchedule(List<ScheduleBean> scheduleBeans);
 	
 	/**
 	 * 删除schedule表中时间重复的数据

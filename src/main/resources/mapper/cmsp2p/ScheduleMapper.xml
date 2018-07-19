@@ -32,13 +32,38 @@
 		duration, 
 		description, 
 		airstarttime,
-		 airendtime, 
-		 language, 
-		 satellite, 
-		 channelcode, 
-		 releasetime, 
-		 status
+		airendtime, 
+		language, 
+		satellite, 
+		channelcode, 
+		releasetime, 
+		status
 	</sql>
+
+	<insert id="insertIntoP2pFromSchedule"  useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="java.util.List">
+		insert into schedule
+		(
+			<include refid="cmsColumns"/>
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(
+			#{item.programName},
+			#{item.releaseStatus},
+			#{item.startDate},
+			#{item.startTime},
+			#{item.duration},
+			#{item.description},
+			#{item.airStartTime},
+			#{item.airEndTime},
+			#{item.language},
+			#{item.satellite},
+			#{item.channelCode},
+			#{item.releaseTime},
+			#{item.status}
+		)
+		</foreach>
+	</insert>
 
 	<insert id="insertIntoSchedule" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="java.util.List">
 		insert into schedule
@@ -101,7 +126,7 @@
 	</select>
 	
 	<select id="selectFirstFromSchedule" resultType="int">
-		select id from schedule limit 1
+		select s.id from schedule as s where exists (select id from schedule where id > 0) limit 1
 	</select>
 	
 <!-- 	<delete id="deleteByScheduleId" parameterType="java.util.List"> -->

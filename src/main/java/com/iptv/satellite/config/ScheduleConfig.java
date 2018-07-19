@@ -2,6 +2,7 @@ package com.iptv.satellite.config;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +44,7 @@ public class ScheduleConfig {
 	 * 存放epg各个表的临时变量
 	 * 存放epg数据源中各个表的表名（便于计算schedule的satellite）以及当前最新数据的id（便于下次更新库的查询）
 	 */
-	private static EpgTableModelBean[] epgTableModels = new EpgTableModelBean[8];
+	private static EpgTableModelBean[] epgTableModels = new EpgTableModelBean[14];
 	
 	/**
 	 * 对epg数据源几个卫星表操作的接口
@@ -101,6 +102,11 @@ public class ScheduleConfig {
 	 * 记录定时时间
 	 */
 	private String timingTime;
+
+	/**
+	 * 日历，计算定时与间隔运行时间的相差时间
+	 */
+	private Calendar calendar = Calendar.getInstance();
 	
 	/**
 	 * 间隔任务
@@ -117,14 +123,20 @@ public class ScheduleConfig {
 	 * epgTableModel初始化
 	 */
 	static {
-		epgTableModels[0] = new EpgTableModelBean("1055e");
-		epgTableModels[1] = new EpgTableModelBean("130e");
-		epgTableModels[2] = new EpgTableModelBean("192e");
-		epgTableModels[3] = new EpgTableModelBean("50w");
-		epgTableModels[4] = new EpgTableModelBean("6875c");
-		epgTableModels[5] = new EpgTableModelBean("70w");
-		epgTableModels[6] = new EpgTableModelBean("75w");
-		epgTableModels[7] = new EpgTableModelBean("80w");
+		epgTableModels[0] = new EpgTableModelBean("1005E");
+		epgTableModels[1] = new EpgTableModelBean("1055E");
+		epgTableModels[2] = new EpgTableModelBean("130E");
+		epgTableModels[3] = new EpgTableModelBean("1320E");
+		epgTableModels[4] = new EpgTableModelBean("160E");
+		epgTableModels[5] = new EpgTableModelBean("192E");
+		epgTableModels[6] = new EpgTableModelBean("300W");
+		epgTableModels[7] = new EpgTableModelBean("430W");
+		epgTableModels[8] = new EpgTableModelBean("580W");
+		epgTableModels[9] = new EpgTableModelBean("6875C");
+		epgTableModels[10] = new EpgTableModelBean("700W");
+		epgTableModels[11] = new EpgTableModelBean("70W");
+		epgTableModels[12] = new EpgTableModelBean("850E");
+		epgTableModels[13] = new EpgTableModelBean("910W");
 	}
 	
 	/**
@@ -169,22 +181,23 @@ public class ScheduleConfig {
 	 */
 	public boolean startIntervalTask(String intervalTime) {  
 		if (this.intervalTime == null || !this.intervalTime.equals(intervalTime)) {
-			long period = FormatUtil.timeToPeriod(intervalTime);                //间隔的时间转为毫秒， 只取小时部分做转化
-			if (period < 60000) {                                                                                   //间隔任务的时间间隔至少是一个小时
-				return false;
-			}
 			try {
-				stopTask(intervalSchedule);                                                               //先中断当前的间隔任务
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();                                                                                //中断失败直接返回
+				long period = FormatUtil.timeToPeriod(intervalTime);                                                    //间隔的时间转为毫秒， 只取小时部分做转化
+				Date firstExecuteTime = new Date(System.currentTimeMillis() + period);
+				calendar.setTime(firstExecuteTime);
+				int firstExecuteMinute = calendar.get(Calendar.MINUTE);
+				int firstExecuteHour = calendar.get(Calendar.HOUR_OF_DAY);
+				int timingHour = Integer.valueOf(timingTime.substring(0, 2));
+				int timingMinute = Integer.valueOf(timingTime.substring(3));
+				stopTask(intervalSchedule);                                                                             //先中断当前的间隔任务
+				if (Math.abs(firstExecuteHour - timingHour) > 0 || Math.abs(firstExecuteMinute - timingMinute) > 5) {
+					intervalSchedule = taskScheduler.scheduleAtFixedRate(intervalTask, firstExecuteTime, period);
+				}
+				this.intervalTime = intervalTime;
+			} catch (InterruptedException | ExecutionException | NumberFormatException e) {
+				LOGGER.debug(e.getMessage());                                                                                //中断失败直接返回
 				return false;
 			}
-			/**
-			 * 以指定间隔时间，指定首次执行时间开启新的间隔任务
-			 * 指定首次执行时间为当前开启任务时间
-			 */
-			intervalSchedule = taskScheduler.scheduleAtFixedRate(intervalTask, new Date(), period); 
-			this.intervalTime = intervalTime;
 		}
 		return true;                                                      
 	}                                                                                  
@@ -226,12 +239,12 @@ public class ScheduleConfig {
 		/**
 		 * 每次删除重复的条件匹配数目
 		 */
-		private static final int EACH_DELETE_COUNT = 500;
+		private static final int EACH_DELETE_COUNT = 1000;
 		
 		/**
 		 * 每次插入schedule的数目
 		 */
-		private static final int EACH_INSERT_COUNT = 300;
+		private static final int EACH_INSERT_COUNT = 1000;
 		
 		/**
 		 * 针对epg的某一个表对（cms或p2p）的schedule表进行更新
@@ -277,7 +290,7 @@ public class ScheduleConfig {
 					logService.addLog(p2pLog);
 				} else {
 					/**
-					 * 为防止数据库连接超时断开，在没有数据更新的情况下最每一个数据库做一个空的查询操作
+					 * 为防止数据库连接超时断开，在没有数据更新的情况下对每一个数据库做一个空的查询操作
 					 */
 					epgService.findFirstFromEpg();
 					cmsService.findFirstFromSchedule();

@@ -172,14 +172,20 @@
 					</select>
 					<select id="select_table" class="search-box">
 						<option itemid="all">请选择表</option>
-						<option itemid="1055e">1055e</option>
-						<option itemid="130e">130e</option>
-						<option itemid="192e">192e</option>
-						<option itemid="50w">50w</option>
-						<option itemid="6875c">6875c</option>
-						<option itemid="70w">70w</option>
-						<option itemid="75w">75w</option>
-						<option itemid="80w">80w</option>
+						<option itemid="1005E">1005E</option>
+						<option itemid="1055E">1055E</option>
+						<option itemid="130E">130E</option>
+						<option itemid="1320E">1320E</option>
+						<option itemid="160E">160E</option>
+						<option itemid="192E">192E</option>
+						<option itemid="300W">300W</option>
+						<option itemid="430W">430W</option>
+						<option itemid="580W">580W</option>
+						<option itemid="6875C">6875C</option>
+						<option itemid="700W">700W</option>
+						<option itemid="70W">70W</option>
+						<option itemid="850E">850E</option>
+						<option itemid="910W">910W</option>
 					</select>
 					<input type="button" class="hvr-push" value="搜索" onclick="findLogsByTableName(0)"/>
                     <!-- <div class="profile_details">
@@ -222,8 +228,36 @@
 				</div>
 				<div class="profile_details">
 					定时任务时间：<input th:value="${timingTime}" id="timingTime" type="time" style="margin-right: 2em; height:2em; border:2px solid rgb(197, 197, 197)"/>
-					间隔任务时间：<input th:value="${intervalTime}" id="intervalTime" type="time" style="margin-right: 2em; height:2em; border:2px solid rgb(197, 197, 197)"/>
-					<input type="button" value="修改" onclick="setCron()"/>
+					<!-- 间隔任务时间：<input th:value="${intervalTime}" id="intervalTime" type="time" style="margin-right: 2em; height:2em; border:2px solid rgb(197, 197, 197)"/> -->
+					间隔任务时间：
+					<select th:value="${intervalTime}" id="intervalTime" name="intervalTime" style="margin-right: 0.5em; height:2em; border:2px solid rgb(197, 197, 197)">
+						<option value="choose_hour">选择时间</option>
+						<option th:selected="${intervalTime == '1'}" value="1">1</option>
+						<option th:selected="${intervalTime == '2'}" value="2">2</option>
+						<option th:selected="${intervalTime == '3'}" value="3">3</option>
+						<option th:selected="${intervalTime == '4'}" value="4">4</option>
+						<option th:selected="${intervalTime == '5'}" value="5">5</option>
+						<option th:selected="${intervalTime == '6'}" value="6">6</option>
+						<option th:selected="${intervalTime == '7'}" value="7">7</option>
+						<option th:selected="${intervalTime == '8'}" value="8">8</option>
+						<option th:selected="${intervalTime == '9'}" value="9">9</option>
+						<option th:selected="${intervalTime == '10'}" value="10">10</option>
+						<option th:selected="${intervalTime == '11'}" value="11">11</option>
+						<option th:selected="${intervalTime == '12'}" value="12">12</option>
+						<option th:selected="${intervalTime == '13'}" value="13">13</option>
+						<option th:selected="${intervalTime == '14'}" value="14">14</option>
+						<option th:selected="${intervalTime == '15'}" value="15">15</option>
+						<option th:selected="${intervalTime == '16'}" value="16">16</option>
+						<option th:selected="${intervalTime == '17'}" value="17">17</option>
+						<option th:selected="${intervalTime == '18'}" value="18">18</option>
+						<option th:selected="${intervalTime == '19'}" value="19">19</option>
+						<option th:selected="${intervalTime == '20'}" value="20">20</option>
+						<option th:selected="${intervalTime == '21'}" value="21">21</option>
+						<option th:selected="${intervalTime == '22'}" value="22">22</option>
+						<option th:selected="${intervalTime == '23'}" value="23">23</option>
+						<option th:selected="${intervalTime == '24'}" value="24">24</option>
+					</select>小时
+					<input type="button" style="margin-left: 2em" value="修改" onclick="setCron()"/>
 				</div>
 				<div class="clearfix"> </div>				
 			</div>

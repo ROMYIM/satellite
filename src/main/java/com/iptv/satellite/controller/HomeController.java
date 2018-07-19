@@ -94,16 +94,18 @@ public class HomeController {
 		LOGGER.info("间隔时间:" + intervalTime);
 		ResponseMessageBean message =  new ResponseMessageBean();
 		message.setMessage("操作失败");
+		StringBuffer messagStringBuffer = new StringBuffer(14);
 		if (timingTime.length() > 0) {	
 			if (scheduleConfig.startTimingTask(timingTime)) {
-				message.setMessage("操作成功");
+				messagStringBuffer.append("定时设置成功！");
 			}
 		}
 		if (intervalTime.length() > 0) {
 			if (scheduleConfig.startIntervalTask(intervalTime)) {
-				message.setMessage("操作成功");
+				messagStringBuffer.append("间隔设置成功！");
 			}
 		}
+		message.setMessage(messagStringBuffer.toString());
 		return message;
 	}
 }
