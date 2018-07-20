@@ -1,33 +1,45 @@
 package com.iptv.satellite.controller;
 
-import com.iptv.satellite.domain.model.DataSourceModel;
+import com.iptv.satellite.domain.db.DataSourceBean;
+import com.iptv.satellite.service.DataSourceService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * DataSourceController
  */
-@RestController
+@Controller
 @RequestMapping("/db")
 public class DataSourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceController.class);
 
+    private final DataSourceService dataSourceService;
+
+    @Autowired
+    public DataSourceController(DataSourceService dataSourceService) {
+        this.dataSourceService = dataSourceService;
+    }
+
     @RequestMapping("/")
-    public ModelAndView index(ModelAndView mView) {
+    public String index() {
         LOGGER.info("db.html");
-        mView.setViewName("db");
-        return mView;
+        return "db";
     }
 
     @RequestMapping("/add")
-    public String addDataSource(DataSourceModel model) {
+    public String addDataSource(DataSourceBean model) {
         LOGGER.info(model.toString());
         model.formatUrl();
+        if (dataSourceService.addServiceTest(model)) {
+            if (!dataSourceService.runtimeServiceTest()) {
+                return "redirect:/";
+            }
+        }
         return "success";
     }
 }

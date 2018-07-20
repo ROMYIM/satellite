@@ -71,6 +71,13 @@ public class BeanUtil {
     }
 
     public static <T> T getBean(String beanName, Class<T> requiredType) {
+        if (beanName == null || beanName.length() <= 0) {
+            return null;
+        }
         return beanFactory.getBean(beanName, requiredType);
+    }
+
+    public static void removeBean(String beanName) {
+        beanFactory.removeBeanDefinition(beanName);
     }
 }

@@ -1,15 +1,31 @@
-package com.iptv.satellite.domain.model;
+package com.iptv.satellite.domain.db;
 
 /**
  * DataSourceModel
  */
-public class DataSourceModel {
+public class DataSourceBean {
 
-    private final String driverClassName;
+    private Integer id;
+    private String beanName;
     private String url;
     private String userName;
     private String password;
+    private final String driverClassName;
     private static final String URL_PREFIX = "jdbc:mysql://";
+
+    /**
+     * @return the id
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /**
+     * @return the beanName
+     */
+    public String getBeanName() {
+        return beanName;
+    }
 
     /**
      * @return the driverClassName
@@ -40,6 +56,20 @@ public class DataSourceModel {
     }
 
     /**
+     * @param id the id to set
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    /**
+     * @param beanName the beanName to set
+     */
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
+    /**
      * @param password the password to set
      */
     public void setPassword(String password) {
@@ -60,7 +90,7 @@ public class DataSourceModel {
         this.userName = userName;
     }
 
-    public DataSourceModel() {
+    public DataSourceBean() {
         driverClassName = "com.mysql.jdbc.Driver";
     }
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iptv.satellite.dao.datasource.DataSourceMapper">
+    <resultMap type="com.iptv.satellite.domain.db.DataSourceBean" id="dataSourceMap">
+        <id property="id" column="id"/>
+        <result property="beanName" column="name"/>
+        <result property="url" column="url"/>
+        <result property="userName" column="username"/>
+        <result property="password" column="password"/>
+    </resultMap>
+
+    <sql id="dataSourceColumns">
+        name, url, username, password
+    </sql>
+
+    <insert id="inserIntoDataSource" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.iptv.satellite.domain.db.DataSourceBean">
+        insert into datasource (<include refid="dataSourceColumns"/>) values (#{beanName}, #{url}, #{userName}, #{password})
+    </insert>
+
+    <select id="selectAllFromDataSource" resultMap="dataSourceMap">
+        select * from datasource 
+    </select>
+
+    <delete id="deleteFromDataSource" parameterType="java.lang.String">
+        delete from datasource where name = #{beanName}
+    </delete>
+</mapper>

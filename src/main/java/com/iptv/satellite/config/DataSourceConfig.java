@@ -54,4 +54,14 @@ public class DataSourceConfig {
 	public DataSource createLogDataSource() {
 		return DataSourceBuilder.create().build();
 	}
+
+	/**
+	 * 生成ds数据源的bean
+	 * @return
+	 */
+	@Bean(name = "dsDS")
+	@ConfigurationProperties(prefix = "spring.datasource.ds")
+	public DataSource createDsDataSource() {
+		return DataSourceBuilder.create().build();
+	}
 }

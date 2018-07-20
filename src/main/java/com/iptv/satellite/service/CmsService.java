@@ -50,17 +50,16 @@ public class CmsService implements ICmsService {
 		} 
 	}
 
-//	@Transactional(value = "cmsTransaction")
 	@Override
-	public void deleteOldFromEpg(List<EpgModelBean> epgModels, LogBean log, int eachDeletCount) {
+	public void deleteOldFromEpg(List<EpgModelBean> epgModels, LogBean log, int eachDeleteCount) {
 		try {
 			if (epgModels != null && epgModels.size() > 0) {
-				if (epgModels.size() > eachDeletCount) {
+				if (epgModels.size() > eachDeleteCount) {
 					int epgModelsIndex = 0;
 					int deleteCount = log.getDeleteCount();
-					for (int j = 0; j < epgModels.size() / eachDeletCount + 1; j++) {   //防止不能整除，所以总循环加一
-						int count = epgModelsIndex + eachDeletCount > epgModels.size() ? epgModels.size() : 
-							epgModelsIndex + eachDeletCount;                //防止最后一次循环超过条件数组的界限
+					for (int j = 0; j < epgModels.size() / eachDeleteCount + 1; j++) {   //防止不能整除，所以总循环加一
+						int count = epgModelsIndex + eachDeleteCount > epgModels.size() ? epgModels.size() : 
+							epgModelsIndex + eachDeleteCount;                //防止最后一次循环超过条件数组的界限
 						deleteCount += scheduleDAO.deleteFromEpg(epgModels.subList(epgModelsIndex, count));   //删除旧数据并累加删除数目
 						epgModelsIndex = count;
 					}
