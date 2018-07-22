@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.iptv.satellite.dao.epg.EpgMapper;
 import com.iptv.satellite.domain.db.EpgBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 import com.iptv.satellite.service.IEpgService;
 import com.iptv.satellite.util.SatelliteUtil;
 
@@ -20,8 +20,12 @@ import com.iptv.satellite.util.SatelliteUtil;
 @Service
 public class EpgService implements IEpgService {
 
+	private final EpgMapper epgMapper;
+
 	@Autowired
-	private EpgMapper epgMapper;
+	public EpgService(EpgMapper epgMapper) {
+		this.epgMapper = epgMapper;
+	}
 
 	@Override
 	public BigInteger findMaxIdFromEpg(String tableName) {
@@ -35,7 +39,7 @@ public class EpgService implements IEpgService {
 	}
 
 	@Override
-	public List<EpgModelBean> findOldFromNewData(String tableName, BigInteger maxId) {
+	public List<EpgModel> findOldFromNewData(String tableName, BigInteger maxId) {
 		String angle = SatelliteUtil.getSatelliteAngle(tableName);
 		return epgMapper.selectOldFromEpg(angle, tableName, maxId);
 	}

@@ -10,7 +10,7 @@ import com.iptv.satellite.dao.cms.ScheduleMapper;
 import com.iptv.satellite.domain.db.EpgBean;
 import com.iptv.satellite.domain.db.LogBean;
 import com.iptv.satellite.domain.db.ScheduleBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 import com.iptv.satellite.service.ICmsService;
 import com.iptv.satellite.util.FormatUtil;
 
@@ -22,8 +22,12 @@ import com.iptv.satellite.util.FormatUtil;
 @Service("cmsService")
 public class CmsService implements ICmsService {
 	
+	private final ScheduleMapper scheduleDAO;
+
 	@Autowired
-	private ScheduleMapper scheduleDAO;
+	public CmsService(ScheduleMapper scheduleMapper) {
+		scheduleDAO = scheduleMapper;
+	}
 
 	@Override
 	public void addNewIntoSchedule(List<EpgBean> epgs, LogBean log, int eachInsertCount) {
@@ -51,7 +55,7 @@ public class CmsService implements ICmsService {
 	}
 
 	@Override
-	public void deleteOldFromEpg(List<EpgModelBean> epgModels, LogBean log, int eachDeleteCount) {
+	public void deleteOldFromEpg(List<EpgModel> epgModels, LogBean log, int eachDeleteCount) {
 		try {
 			if (epgModels != null && epgModels.size() > 0) {
 				if (epgModels.size() > eachDeleteCount) {

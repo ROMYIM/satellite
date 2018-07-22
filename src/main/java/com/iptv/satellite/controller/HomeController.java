@@ -16,27 +16,34 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.iptv.satellite.config.ScheduleConfig;
 import com.iptv.satellite.domain.db.LogBean;
-import com.iptv.satellite.domain.model.ResponseMessageBean;
+import com.iptv.satellite.domain.model.ResponseMessage;
 import com.iptv.satellite.domain.model.ResultModel;
 import com.iptv.satellite.service.ILogService;
+import com.iptv.satellite.service.TaskService;
 
 @RestController
 public class HomeController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 	
 	/**
-	 * 任务调度的依赖注入，用于修改相关任务的时间设置
+	 * 任务调度的服务接口，用于修改相关任务的时间设置
 	 */
-	@Autowired
-	private ScheduleConfig scheduleConfig;
+	private final TaskService taskService;
 	
 	/**
-	 * 日志服务的依赖注入，用于对日志查询操作
+	 * 日志服务接口，用于对日志查询操作
+	 */
+	private final ILogService logService;
+
+	/**
+	 * 任务调度和日志服务的依赖注入
 	 */
 	@Autowired
-	private ILogService logService;
+	public HomeController(TaskService taskService, ILogService logService) {
+		this.taskService = taskService;
+		this.logService = logService;
+	}
 	
 	/**
 	 * 首页响应，默认查询前20条日志记录，并返回两个任务的设置时间
@@ -48,8 +55,8 @@ public class HomeController {
 		List<LogBean> logs = logService.findAllLogs(0, 20);
 		int pageCount = logService.findLogsPageCount("", "");
 		modelAndView.addObject("pageCount", pageCount);
-		modelAndView.addObject("timingTime", scheduleConfig.getTimingTime());
-		modelAndView.addObject("intervalTime", scheduleConfig.getIntervalTime());
+		modelAndView.addObject("timingTime", taskService.getTimingTime());
+		modelAndView.addObject("intervalTime", taskService.getIntervalTime());
 		modelAndView.addObject("logList", logs).setViewName("index");
 		return modelAndView;
 	}
@@ -89,19 +96,19 @@ public class HomeController {
 	 * @return  响应消息实例，操作成功或操作失败
 	 */
 	@RequestMapping(value = "setCron", method = RequestMethod.POST)
-	public ResponseMessageBean setCron(String timingTime, String intervalTime) {
+	public ResponseMessage setCron(String timingTime, String intervalTime) {
 		LOGGER.info("定时时间:" + timingTime);
 		LOGGER.info("间隔时间:" + intervalTime);
-		ResponseMessageBean message =  new ResponseMessageBean();
+		ResponseMessage message =  new ResponseMessage();
 		message.setMessage("操作失败");
 		StringBuffer messagStringBuffer = new StringBuffer(14);
 		if (timingTime.length() > 0) {	
-			if (scheduleConfig.startTimingTask(timingTime)) {
+			if (taskService.startTimingTask(timingTime)) {
 				messagStringBuffer.append("定时设置成功！");
 			}
 		}
 		if (intervalTime.length() > 0) {
-			if (scheduleConfig.startIntervalTask(intervalTime)) {
+			if (taskService.startIntervalTask(intervalTime)) {
 				messagStringBuffer.append("间隔设置成功！");
 			}
 		}

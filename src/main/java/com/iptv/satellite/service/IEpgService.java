@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import com.iptv.satellite.domain.db.EpgBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 
 /**
 *@author:   yim
@@ -34,8 +34,12 @@ public interface IEpgService {
 	 * @param maxId  旧数据中最大的id值，作为新数据与旧数据的分界
 	 * @return  返回判定时间重复的条件数据
 	 */
-	List<EpgModelBean> findOldFromNewData(String tableName, BigInteger maxId);
+	List<EpgModel> findOldFromNewData(String tableName, BigInteger maxId);
 	
+	/**
+	 * 为防止与数据库断开连接而作的非业务逻辑查询操作
+	 * @return 返回第一条数据的id值
+	 */
 	BigInteger findFirstFromEpg();
 	
 }

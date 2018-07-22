@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.iptv.satellite.domain.db.EpgBean;
 import com.iptv.satellite.domain.db.ScheduleBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 
 /** 	 	
 *@author:   yim
@@ -28,7 +28,7 @@ public interface ScheduleMapper {
 	 * @param epgModels     用于匹配要删除的条件数据
 	 * @return                            对数据操作的行数
 	 */
-	int deleteFromEpg(List<EpgModelBean> epgModels);
+	int deleteFromEpg(List<EpgModel> epgModels);
 	
 	int selectFirstFromSchedule();
 }

@@ -21,7 +21,7 @@ public class BeanUtil {
 
     public static boolean createBean(String className, String beanName, Map<String, Object> propertyMap, Map<String, String> referenceMap, 
             List<Object> propertyConstructList, List<String> referenceConstructList, String destoryMethod) {
-        if (beanFactory.containsBeanDefinition(className)) {
+        if (beanFactory.containsBeanDefinition(beanName)) {
             return false;
         }
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.rootBeanDefinition(className);

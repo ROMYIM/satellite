@@ -3,7 +3,7 @@ package com.iptv.satellite.dao;
 import java.util.List;
 
 import com.iptv.satellite.domain.db.ScheduleBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -22,14 +22,17 @@ public class ScheduleDAO {
     }
 
     public int addSchedules(List<ScheduleBean> scheduleBeans) {
-        return sqlSession.insert("com.iptv.satellite.dao.ScheduleMapper.insertIntoSchedule", scheduleBeans);
+        ScheduleMapper mapper = sqlSession.getMapper(ScheduleMapper.class);
+        return mapper.insertIntoSchedule(scheduleBeans);
     }
 
-    public int deleteOldEpg(List<EpgModelBean> epgModels) {
-        return sqlSession.delete("com.iptv.satellite.dao.ScheduleMapper.deleteFromEpg", epgModels);
+    public int deleteOldEpg(List<EpgModel> epgModels) {
+        ScheduleMapper mapper = sqlSession.getMapper(ScheduleMapper.class);
+        return mapper.deleteFromEpg(epgModels);
     }
 
     public int getFirstSchedule() {
-        return sqlSession.selectOne("com.iptv.satellite.dao.ScheduleMapper.selectFirstFromSchedule");
+        ScheduleMapper mapper = sqlSession.getMapper(ScheduleMapper.class);
+        return mapper.selectFirstFromSchedule();
     }
 }

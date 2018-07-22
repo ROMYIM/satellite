@@ -12,24 +12,25 @@ import com.iptv.satellite.dao.cmsp2p.P2pScheduleMapper;
 import com.iptv.satellite.domain.db.EpgBean;
 import com.iptv.satellite.domain.db.LogBean;
 import com.iptv.satellite.domain.db.ScheduleBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 import com.iptv.satellite.service.ICmsService;
 import com.iptv.satellite.util.FormatUtil;
 
 /**
-*@author:   yim
-*@date:  2018年3月23日下午12:16:06
-*@description:   p2p schedule表的service实现类。
-*                                  重写的两个方法才是真正的调用，其余的方法仅做测试。
-*/
+ * @author:   yim
+ * @date:  2018年3月23日下午12:16:06
+ * @description:   p2p schedule表的service实现类。
+ *                 重写的两个方法才是真正的调用，其余的方法仅做测试。
+ */
 @Service("cmsp2pService")
 public class Cmsp2pService implements ICmsService {
 	
-	/**
-	 * p2p schedule表的持久层接口依赖注入
-	 */
+	private final P2pScheduleMapper scheduleDAO;
+
 	@Autowired
-	private P2pScheduleMapper scheduleDAO;
+	public Cmsp2pService(P2pScheduleMapper scheduleMapper) {
+		scheduleDAO = scheduleMapper;
+	}
 	
 	@Override
 	public void addNewIntoSchedule(List<EpgBean> epgs, LogBean log, int eachInsertCount) {
@@ -57,7 +58,7 @@ public class Cmsp2pService implements ICmsService {
 	}
 
 	@Override
-	public void deleteOldFromEpg(List<EpgModelBean> epgModels, LogBean log, int eachDeletCount) {
+	public void deleteOldFromEpg(List<EpgModel> epgModels, LogBean log, int eachDeletCount) {
 		if (epgModels != null && epgModels.size() > 0) {
 			if (epgModels.size() > eachDeletCount) {
 				int epgModelsIndex = 0;
@@ -75,7 +76,7 @@ public class Cmsp2pService implements ICmsService {
 		}
 	}
 	
-	public List<Integer> findOldIdFromSchedule(List<EpgModelBean> epgModels, Integer pageNum, Integer pageSize) {
+	public List<Integer> findOldIdFromSchedule(List<EpgModel> epgModels, Integer pageNum, Integer pageSize) {
 		Map<String, Object> paramsMap = new HashMap<>();
 		paramsMap.put("pageNum", pageNum);
 		paramsMap.put("pageSize", pageSize);

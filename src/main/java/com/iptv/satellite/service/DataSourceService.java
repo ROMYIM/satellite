@@ -32,7 +32,7 @@ public class DataSourceService {
 
     private final ApplicationContext applicationContext;
 
-    private List<String> runtimeServiceList;
+    private volatile List<String> runtimeServiceList;
 
     @Autowired
     public DataSourceService(DataSourceMapper dataSourceMapper, ApplicationContext applicationContext) {
@@ -68,6 +68,7 @@ public class DataSourceService {
             Map<String, String> referenceMap = new HashMap<>();
             referenceMap.put("dataSource", dataSourceBeanName);
             if (BeanUtil.createBean("org.mybatis.spring.SqlSessionFactoryBean", sessionFactoryBeanName, propertyMap, referenceMap, null, null, null)) {
+                addTransaction(dataSourceBeanName, beanName);
                 return sessionFactoryBeanName;
             }
         }
@@ -139,7 +140,7 @@ public class DataSourceService {
                 if (serviceBeanName != null) {
                     ScheduleService service = BeanUtil.getBean(serviceBeanName, ScheduleService.class);
                     dataSourceMapper.inserIntoDataSource(model);
-                    runtimeServiceList.add(model.getBeanName());
+                    runtimeServiceList.add(serviceBeanName);
                     int id = service.findFirstFromSchedule();
                     LOGGER.info("new service select id:" + id);
                     return true;
@@ -166,11 +167,11 @@ public class DataSourceService {
                     ), beanName
                 ), beanName
             );
-           if (serviceBeanName != null) {
-               this.runtimeServiceList.add(beanName);
-           } else {
+            if (serviceBeanName != null) {
+               this.runtimeServiceList.add(serviceBeanName);
+            } else {
                return false;
-           }
+            }
         }
         return true;
     }

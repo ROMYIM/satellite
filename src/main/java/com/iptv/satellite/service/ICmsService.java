@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.iptv.satellite.domain.db.EpgBean;
 import com.iptv.satellite.domain.db.LogBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 
 /**
 *@author:   yim
@@ -31,7 +31,7 @@ public interface ICmsService {
 	 * @param log                                      用于记录操作的日志
 	 * @param eachDeleteCount          每一次删除的操作数
 	 */
-	void deleteOldFromEpg(List<EpgModelBean> epgModels, LogBean log, int eachDeleteCount);
+	void deleteOldFromEpg(List<EpgModel> epgModels, LogBean log, int eachDeleteCount);
 	
 	/**
 	 * 查询schedule表的第一条记录的id

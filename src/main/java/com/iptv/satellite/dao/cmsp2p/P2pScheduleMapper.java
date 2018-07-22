@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.iptv.satellite.domain.db.EpgBean;
 import com.iptv.satellite.domain.db.ScheduleBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 
 /** 	 	
 *@author:   yim
@@ -33,7 +33,7 @@ public interface P2pScheduleMapper {
 	 * @param epgModels  与判定时间重复的条件数据
 	 * @return  数据中的操作行数
 	 */
-	int deleteFromEpg(List<EpgModelBean> epgModels);
+	int deleteFromEpg(List<EpgModel> epgModels);
 	
 	/**
 	 * 查询schedule表中时间重复数据主键值，时间太慢，已放弃

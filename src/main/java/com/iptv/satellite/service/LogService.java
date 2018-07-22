@@ -17,8 +17,12 @@ import com.iptv.satellite.service.ILogService;
 @Service
 public class LogService implements ILogService {
 
+	private final LogMapper logDAO;
+
 	@Autowired
-	private LogMapper logDAO;
+	public LogService(LogMapper logMapper) {
+		this.logDAO = logMapper;
+	}
 	
 	@Override
 	public int addLog(LogBean log) {

@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.iptv.satellite.domain.db.EpgBean;
-import com.iptv.satellite.domain.model.EpgModelBean;
+import com.iptv.satellite.domain.model.EpgModel;
 
 public interface EpgMapper {
 	
@@ -31,7 +31,7 @@ public interface EpgMapper {
 	 * @param maxId  锚点值
 	 * @return  判定schedule表中时间重复的条件数据
 	 */
-	List<EpgModelBean> selectOldFromEpg(@Param("angle")String angle, @Param("tableName")String tableName, @Param("maxId")BigInteger maxId);
+	List<EpgModel> selectOldFromEpg(@Param("angle")String angle, @Param("tableName")String tableName, @Param("maxId")BigInteger maxId);
 	
 	/**
 	 * 查询当前表中最新记录的id值，用于和锚点进行比较，判定该表是否有新的数据更新

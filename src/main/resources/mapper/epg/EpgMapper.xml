@@ -19,7 +19,7 @@
 		select max(id) from ${tableName} where prog_name != &apos;&apos;
 	</select>
 	
-	<select id="selectOldFromEpg" resultType="com.iptv.satellite.domain.model.EpgModelBean">
+	<select id="selectOldFromEpg" resultType="com.iptv.satellite.domain.model.EpgModel">
 		select DATE_FORMAT(start_time  + interval 8 hour, &apos;%Y-%m-%d 00:00:00&apos;) as startDate, 
 		CONCAT(#{angle} , <![CDATA[ ':' ]]> , CAST((freq / 1000) AS UNSIGNED), <![CDATA[ ':' ]]> , service_id) as satellite 
 		from ${tableName}
