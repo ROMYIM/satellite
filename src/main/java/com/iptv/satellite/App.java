@@ -7,9 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ApplicationContext;
-//import org.springframework.boot.builder.SpringApplicationBuilder;
-//import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 程序入口
@@ -17,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @EntityScan("com.iptv.domain")
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-@EnableScheduling
+// @EnableScheduling
+// @EnableAsync
 public class App 
 {
 	public static void main( String[] args )

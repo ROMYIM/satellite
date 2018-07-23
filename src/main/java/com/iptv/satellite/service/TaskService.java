@@ -6,16 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,7 @@ import com.iptv.satellite.domain.model.EpgTableModel;
 import com.iptv.satellite.service.ICmsService;
 import com.iptv.satellite.service.IEpgService;
 import com.iptv.satellite.service.ILogService;
+import com.iptv.satellite.util.BeanUtil;
 import com.iptv.satellite.util.FormatUtil;
 
 /**
@@ -53,28 +52,28 @@ public class TaskService {
 	private final IEpgService epgService;
 	
 	/**
-	 * 对cms数据源操作的接口
-	 * 封装查询、删除、添加schedule（cms数据源的表）方法
-	 */
-	private final ICmsService cmsService;
-	
-	/**
-	 * 对p2p数据源操作的接口
-	 * 封装查询、删除、添加schedule（p2p数据源的表）方法
-	 */
-	private final ICmsService cmsp2pService;
-	
-	/**
 	 * 对日志表操作的接口
 	 * 封装查询和添加日志的方法
 	 */
 	private final ILogService logService;
+
+	/**
+	 * 数据源服务操作接口
+	 * 用于获取在线数据源服务列表
+	 */
+	private final DataSourceService dataSourceService;
 	
 	/**
 	 * 任务调度者
 	 * 用于开启定时任务和间隔任务
 	 */
 	private final ThreadPoolTaskScheduler taskScheduler;
+
+	/**
+	 * 任务执行者
+	 * 任务开始后，任务执行者会从线程池中分配一个工作线程执行具体操作
+	 */
+	private final Executor taskExecutor;
 	
 	/**
 	 * 对定时任务操作的接口
@@ -135,27 +134,13 @@ public class TaskService {
 	}
 
 	@Autowired
-	public TaskService(ILogService logService, IEpgService epgService, 
-			@Qualifier("cmsService")ICmsService cmsService, @Qualifier("cmsp2pService")ICmsService cmsp2pService, 
-			ThreadPoolTaskScheduler taskScheduler) {
+	public TaskService(ILogService logService, IEpgService epgService, DataSourceService dataSourceService, 
+			ThreadPoolTaskScheduler taskScheduler, Executor taskExecutor) {
 		this.logService = logService;
 		this.epgService = epgService;
-		this.cmsService = cmsService;
-		this.cmsp2pService = cmsp2pService;
+		this.dataSourceService = dataSourceService;
 		this.taskScheduler = taskScheduler;
-	}
-	
-	/**
-	 * 生成任务调度者
-	 * 设置线程池大小为2
-	 * 把任务调度者声明为bean让spring管理
-	 * @return 任务调度者实例
-	 */
-	@Bean("taskScheduler")
-	public ThreadPoolTaskScheduler createTaskScheduler() {
-		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-		taskScheduler.setPoolSize(2);
-		return taskScheduler;
+		this.taskExecutor = taskExecutor;
 	}
 	
 	//获取间隔时间
@@ -255,14 +240,13 @@ public class TaskService {
 		/**
 		 * 针对epg的某一个表对（cms或p2p）的schedule表进行更新
 		 * @param scheduleService              schedule表的操作接口
-		 * @param logService                         日志表操作接口
 		 * @param epgs                           需要插入的epg新数据  
 		 * @param epgModels                用于匹配需要删除的条件数据
 		 * @param log                             用于记录操作的日志
 		 * @return                                    生成的操作日志
 		 */
-		@Async
-		private void updateCms(ICmsService scheduleService, ILogService logService, List<EpgBean> epgs, List<EpgModel> epgModels, LogBean log) {
+		private void updateCms(ICmsService scheduleService, List<EpgBean> epgs, List<EpgModel> epgModels, LogBean log) {
+			LOGGER.info(Thread.currentThread().getName() + ":" + log.getTargetDataBase() + "执行服务");
 			long startTime = System.currentTimeMillis();                           //开始操作的时间戳
 			scheduleService.deleteOldFromEpg(epgModels, log, EACH_DELETE_COUNT);
 			scheduleService.addNewIntoSchedule(epgs, log, EACH_INSERT_COUNT);
@@ -277,37 +261,55 @@ public class TaskService {
 		 */
 		@Override
 		public void run() {                        
-			long totalStartTime = System.currentTimeMillis();                                                                                                                                                    //本次任务的开始时间
-			LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(totalStartTime));      
-			for (int i = 0; i < epgTableModels.length; i++) {                                                                                                                                                            //对epg的每个表进行相同操作                    
+			long totalStartTime = System.currentTimeMillis();                                                                                                                                                    
+			LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(totalStartTime));  
+			for (int i = 0; i < epgTableModels.length; i++) {                                                                                                                                                                               
 				String tableName = epgTableModels[i].getTableName();
-				BigInteger maxId = epgService.findMaxIdFromEpg(tableName);                                                                                                                    //找出该表中最新数据的游标
-				
-				/**
-				 * 如果该表有数据更新
-				 * 先查询表中新的数据以及新数据中需要删除的条件数目
-				 * 分别对cms数据库和p2p数据库进行更新操作，并生成相应的日志
-				 * 把日志添加到日志表中
-				 */
-				if (maxId != null && maxId.compareTo(epgTableModels[i].getCurrentMaxId()) > 0) {                                                                            //判断该表中是否有数据更新
-					List<EpgBean> epgs = epgService.findNewDataFromEpg(tableName, epgTableModels[i].getCurrentMaxId());                                 //获取新增的数据
-					List<EpgModel> epgModels = epgService.findOldFromNewData(tableName, epgTableModels[i].getCurrentMaxId());         //获取用于删除匹配的条件数据
-					
+				BigInteger maxId = epgService.findMaxIdFromEpg(tableName);  
+				if (maxId != null && maxId.compareTo(epgTableModels[i].getCurrentMaxId()) > 0) {
+					epgTableModels[i].setEpgBeans(epgService.findNewDataFromEpg(tableName, epgTableModels[i].getCurrentMaxId()));                                  //获取新增的数据
+					epgTableModels[i].setEpgModels(epgService.findOldFromNewData(tableName, epgTableModels[i].getCurrentMaxId()));        //获取用于删除匹配的条件数据
+					epgTableModels[i].setCurrentMaxId(maxId); 
+					epgTableModels[i].setUpdateFlag(true);
 				} else {
-					/**
-					 * 为防止数据库连接超时断开，在没有数据更新的情况下对每一个数据库做一个空的查询操作
-					 */
+					epgTableModels[i].setUpdateFlag(false);
 					epgService.findFirstFromEpg();
-					cmsService.findFirstFromSchedule();
-					cmsp2pService.findFirstFromSchedule();
 					logService.findFirstFromLog();
-					LogBean logBean = new LogBean(epgTableModels[i].getTableName(), "无更新操作");
-					logService.addLog(logBean);
+					logService.addLog(new LogBean(tableName, "无更新操作"));
 				}
-				
-				epgTableModels[i].setCurrentMaxId(maxId);                                                                                                                                                                //更新游标
+				                                 
 			}
-
+			
+			/**
+			 * 如果该表有数据更新
+			 * 先查询表中新的数据以及新数据中需要删除的条件数目
+			 * 分别对各数据库进行更新操作，并生成相应的日志
+			 * 把日志添加到日志表中
+			 */
+			for (String serviceName : dataSourceService.getRuntimeServiceList()) {
+				ICmsService scheduleService = BeanUtil.getBean(serviceName, ScheduleService.class);
+				if (scheduleService != null) {
+					taskExecutor.execute(new Runnable(){
+					
+						@Override
+						public void run() {
+							LOGGER.info(Thread.currentThread().getName());
+							for (EpgTableModel epgTableModel : epgTableModels) {
+								if (epgTableModel.getUpdateFlag()) {
+									updateCms(scheduleService, epgTableModel.getEpgBeans(), epgTableModel.getEpgModels(), new LogBean(epgTableModel.getTableName(), scheduleService.getDataSourceName()));
+								} else {
+									/**
+									 * 为防止数据库连接超时断开，在没有数据更新的情况下对每一个数据库做一个空的查询操作
+									 */
+									scheduleService.findFirstFromSchedule();
+								}
+							}
+						}
+					});
+				} else {
+					LOGGER.info("无法获取服务");
+				}
+			}
 			long totalEndTime = System.currentTimeMillis();                                                                                                                                                             //结束时间
 			long totalDuration = totalEndTime - totalStartTime;                                                                                                                                                        //计算用时
 			LOGGER.info("持续时间：" + new SimpleDateFormat("mm:ss.SSS").format(totalDuration));

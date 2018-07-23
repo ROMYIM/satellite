@@ -34,6 +34,13 @@ public class DataSourceService {
 
     private volatile List<String> runtimeServiceList;
 
+    /**
+     * @return the runtimeServiceList
+     */
+    public List<String> getRuntimeServiceList() {
+        return runtimeServiceList;
+    }
+
     @Autowired
     public DataSourceService(DataSourceMapper dataSourceMapper, ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -116,8 +123,10 @@ public class DataSourceService {
         if (scheduleDAO != null) {
             String serviceBeanName = beanName + "ScheduleService";
             Map<String, String> referenceMap = new HashMap<>();
+            Map<String, Object> propertyMap = new HashMap<>();
             referenceMap.put("scheduleDAO", scheduleDAOBeanName);
-            if (BeanUtil.createBean("com.iptv.satellite.service.ScheduleService", serviceBeanName, null, referenceMap, null, null, null)) {
+            propertyMap.put("dataSourceName", beanName);
+            if (BeanUtil.createBean("com.iptv.satellite.service.ScheduleService", serviceBeanName, propertyMap, referenceMap, null, null, null)) {
                 return serviceBeanName;
             }
         }
@@ -168,6 +177,7 @@ public class DataSourceService {
                 ), beanName
             );
             if (serviceBeanName != null) {
+                LOGGER.info("启动服务：" + beanName);
                this.runtimeServiceList.add(serviceBeanName);
             } else {
                return false;

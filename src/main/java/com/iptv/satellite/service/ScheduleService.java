@@ -15,14 +15,31 @@ import com.iptv.satellite.util.FormatUtil;
  */
 public class ScheduleService implements ICmsService {
 
-    private ScheduleDAO scheduleDAO;
+	private ScheduleDAO scheduleDAO;
+	
+	private String dataSourceName;
 
     /**
      * @param scheduleDAO the scheduleDAO to set
      */
     public void setScheduleDAO(ScheduleDAO scheduleDAO) {
         this.scheduleDAO = scheduleDAO;
-    }
+	}
+	
+	/**
+	 * @param dataSourceName the dataSourceName to set
+	 */
+	public void setDataSourceName(String dataSourceName) {
+		this.dataSourceName = dataSourceName;
+	}
+
+	/**
+	 * @return the dataSourceName
+	 */
+	@Override
+	public String getDataSourceName() {
+		return dataSourceName;
+	}
 
 	@Override
 	public void addNewIntoSchedule(List<EpgBean> epgs, LogBean log, int eachInsertCount) {

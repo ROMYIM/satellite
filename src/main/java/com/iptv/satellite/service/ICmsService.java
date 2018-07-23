@@ -38,4 +38,6 @@ public interface ICmsService {
 	 * @return
 	 */
 	int findFirstFromSchedule();
+
+	String getDataSourceName();
 }

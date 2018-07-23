@@ -26,26 +26,6 @@ public class DataSourceConfig {
 	}
 	
 	/**
-	 * 生成cms数据源的bean
-	 * @return
-	 */
-	@Bean(name = "cmsDS")
-	@ConfigurationProperties(prefix = "spring.datasource.cms")
-	public DataSource createCmsDataSource() {
-		return DataSourceBuilder.create().build();
-	}
-	
-	/**
-	 * 生成p2p数据源的bean
-	 * @return
-	 */
-	@Bean(name = "cmsp2pDS")
-	@ConfigurationProperties(prefix = "spring.datasource.p2p")
-	public DataSource createCmsp2p2DataSource() {
-		return DataSourceBuilder.create().build();
-	}
-	
-	/**
 	 * 生成log数据源的bean
 	 * @return
 	 */
