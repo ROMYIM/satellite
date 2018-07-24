@@ -59,6 +59,17 @@ public class DataSourceService {
         propertyMap.put("url", model.getUrl());
         propertyMap.put("username", model.getUserName());
         propertyMap.put("password", model.getPassword());
+        propertyMap.put("maxActive", 50);
+        propertyMap.put("maxIdle", 50);
+        propertyMap.put("initialSize", 1);
+        propertyMap.put("maxWait", 60000);
+        propertyMap.put("minIdle", 1);
+        propertyMap.put("timeBetweenEvictionRunsMillis", 60000);
+        propertyMap.put("minEvictableIdleTimeMillis", 300000);
+        propertyMap.put("validationQuery", "select 'x'");
+        propertyMap.put("testWhileIdle", true);
+        propertyMap.put("testOnBorrow", false);
+        propertyMap.put("testOnReturn", false);
         String beanName = model.getBeanName() + "Ds";
         if (BeanUtil.createBean("org.apache.tomcat.jdbc.pool.DataSource", beanName, propertyMap, null, null, null, "close")) {
            return beanName;
@@ -133,7 +144,7 @@ public class DataSourceService {
         return null;
     }
 
-    public boolean addServiceTest(DataSourceBean model) {
+    public boolean addService(DataSourceBean model) {
         String serviceBeanName = null;
         if (!runtimeServiceList.contains(model.getBeanName())) {
             try {
@@ -147,11 +158,8 @@ public class DataSourceService {
                     ), model.getBeanName()
                 );
                 if (serviceBeanName != null) {
-                    ScheduleService service = BeanUtil.getBean(serviceBeanName, ScheduleService.class);
                     dataSourceMapper.inserIntoDataSource(model);
                     runtimeServiceList.add(serviceBeanName);
-                    int id = service.findFirstFromSchedule();
-                    LOGGER.info("new service select id:" + id);
                     return true;
                 }
             } catch (Exception e) {	
@@ -186,16 +194,4 @@ public class DataSourceService {
         return true;
     }
 
-    public boolean runtimeServiceTest() {
-        if (runtimeServiceList.size() >= 3) {
-            long timestamp = System.currentTimeMillis();
-            while (System.currentTimeMillis() - timestamp < 5000) {
-                for (String serviceBeanName : runtimeServiceList) {
-                    ScheduleService service = BeanUtil.getBean(serviceBeanName, ScheduleService.class);
-                    LOGGER.info("service test. select id:" + service.findFirstFromSchedule());
-                }
-            }
-        }
-        return false;
-    }
 }

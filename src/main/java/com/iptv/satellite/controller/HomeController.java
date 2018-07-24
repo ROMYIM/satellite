@@ -5,6 +5,7 @@ package com.iptv.satellite.controller;
 *@description:   日志控制层，对日志相关的逻辑操作
 */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,11 +54,16 @@ public class HomeController {
 	@RequestMapping("/")
 	public ModelAndView index(ModelAndView modelAndView) {
 		List<LogBean> logs = logService.findAllLogs(0, 20);
+		List<String> serviceStrings = taskService.getDataSourceService().getRuntimeServiceList();
+		List<String> dataSourceList = new ArrayList<>(serviceStrings.size());
+		for (String serviceName : serviceStrings) {
+			dataSourceList.add(serviceName.replace("ScheduleService", ""));
+		}
 		int pageCount = logService.findLogsPageCount("", "");
 		modelAndView.addObject("pageCount", pageCount);
 		modelAndView.addObject("timingTime", taskService.getTimingTime());
 		modelAndView.addObject("intervalTime", taskService.getIntervalTime());
-		modelAndView.addObject("logList", logs).setViewName("index");
+		modelAndView.addObject("logList", logs).addObject("dataSources", dataSourceList).setViewName("index");
 		return modelAndView;
 	}
 	

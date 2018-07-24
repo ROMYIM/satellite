@@ -116,7 +116,7 @@ public class TaskService {
 	 * 静态代码块
 	 * epgTableModel初始化
 	 */
-	static {
+	private static void initEpgTableModels() {
 		epgTableModels[0] = new EpgTableModel("1005E");
 		epgTableModels[1] = new EpgTableModel("1055E");
 		epgTableModels[2] = new EpgTableModel("130E");
@@ -141,6 +141,7 @@ public class TaskService {
 		this.dataSourceService = dataSourceService;
 		this.taskScheduler = taskScheduler;
 		this.taskExecutor = taskExecutor;
+		initEpgTableModels();
 	}
 	
 	//获取间隔时间
@@ -151,6 +152,13 @@ public class TaskService {
 	//获取定时时间
 	public String getTimingTime() {
 		return timingTime;
+	}
+
+	/**
+	 * @return the dataSourceService
+	 */
+	public DataSourceService getDataSourceService() {
+		return dataSourceService;
 	}
 	
 	/**
@@ -219,6 +227,20 @@ public class TaskService {
 		this.timingTime = timingTime;
 		return true;
 	}
+
+	public boolean resetTask() {
+		try {
+			stopTask(timingSchedule);
+			stopTask(intervalSchedule);
+			intervalTime = null;
+			timingTime = null;
+			initEpgTableModels();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	/**
 	 * 
@@ -246,11 +268,12 @@ public class TaskService {
 		 * @return                                    生成的操作日志
 		 */
 		private void updateCms(ICmsService scheduleService, List<EpgBean> epgs, List<EpgModel> epgModels, LogBean log) {
-			LOGGER.info(Thread.currentThread().getName() + ":" + log.getTargetDataBase() + "执行服务");
+			StringBuilder infoStringBuilder = new StringBuilder(30);
+			infoStringBuilder.append(Thread.currentThread().getName()).append(":").append(log.getTargetDataBase()).append("执行服务:").append(log.getTableName());
+			LOGGER.info(infoStringBuilder.toString()); 
 			long startTime = System.currentTimeMillis();                           //开始操作的时间戳
 			scheduleService.deleteOldFromEpg(epgModels, log, EACH_DELETE_COUNT);
 			scheduleService.addNewIntoSchedule(epgs, log, EACH_INSERT_COUNT);
-			LOGGER.info(log.getTableName());
 			long endTime = System.currentTimeMillis();                       //结束操作的时间戳
 			log.setDuration(endTime - startTime);                                   //计算用时
 			logService.addLog(log);
@@ -260,9 +283,8 @@ public class TaskService {
 		 * 任务执行的程序
 		 */
 		@Override
-		public void run() {                        
-			long totalStartTime = System.currentTimeMillis();                                                                                                                                                    
-			LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(totalStartTime));  
+		public void run() {     
+			                 
 			for (int i = 0; i < epgTableModels.length; i++) {                                                                                                                                                                               
 				String tableName = epgTableModels[i].getTableName();
 				BigInteger maxId = epgService.findMaxIdFromEpg(tableName);  
@@ -293,7 +315,8 @@ public class TaskService {
 					
 						@Override
 						public void run() {
-							LOGGER.info(Thread.currentThread().getName());
+							long totalStartTime = System.currentTimeMillis();                                                                                                                                                    
+							LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(totalStartTime));   
 							for (EpgTableModel epgTableModel : epgTableModels) {
 								if (epgTableModel.getUpdateFlag()) {
 									updateCms(scheduleService, epgTableModel.getEpgBeans(), epgTableModel.getEpgModels(), new LogBean(epgTableModel.getTableName(), scheduleService.getDataSourceName()));
@@ -304,15 +327,15 @@ public class TaskService {
 									scheduleService.findFirstFromSchedule();
 								}
 							}
+							long totalEndTime = System.currentTimeMillis();                                                                                                                                                             //结束时间
+							long totalDuration = totalEndTime - totalStartTime;                                                                                                                                                        //计算用时
+							LOGGER.info(scheduleService.getDataSourceName() + "持续时间：" + new SimpleDateFormat("mm:ss.SSS").format(totalDuration));
 						}
 					});
 				} else {
 					LOGGER.info("无法获取服务");
 				}
 			}
-			long totalEndTime = System.currentTimeMillis();                                                                                                                                                             //结束时间
-			long totalDuration = totalEndTime - totalStartTime;                                                                                                                                                        //计算用时
-			LOGGER.info("持续时间：" + new SimpleDateFormat("mm:ss.SSS").format(totalDuration));
 		}
 	}
 

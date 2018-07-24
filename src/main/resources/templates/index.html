@@ -13,7 +13,7 @@
         <div class="header-main">
 			<div class="header-left">
 				<div class="logo-name">
-					<a href="index.html"> <h1>日志查询</h1> 
+					<a href="db/"> <h1>添加数据库</h1> 
 						<!--<img id="logo" src="" alt="Logo"/>--> 
 					</a> 								
                 </div>
@@ -165,12 +165,11 @@
 							</div> -->
 							<!--notification menu end -->
 				<div class="profile_details_left">
-					<select id="target_db" class="search-box">
-						<option>请选择目标数据库</option>
-						<option>cms</option>
-						<option>p2p</option>
+					<select id="target_db" name="dataSources" style="height: 2em;" th:field="*{dataSources}" th:value="*{dataSources}" class="search-box">
+						<option value="">请选择目标数据库</option>
+						<option th:each="dataSource,userStat:${dataSources}" th:value="${dataSource}" th:text="${dataSource}"></option>
 					</select>
-					<select id="select_table" class="search-box">
+					<select id="select_table" class="search-box" style="height: 2em;">
 						<option itemid="all">请选择表</option>
 						<option itemid="1005E">1005E</option>
 						<option itemid="1055E">1055E</option>
