@@ -44,4 +44,14 @@ public class DataSourceConfig {
 	public DataSource createDsDataSource() {
 		return DataSourceBuilder.create().build();
 	}
+
+	/**
+	 * 生成informationSchema数据源的bean
+	 * @return
+	 */
+	@Bean(name = "informationSchemaDs")
+	@ConfigurationProperties(prefix = "spring.datasource.informationSchema")
+	public DataSource createInformationSchemaDataSource() {
+		return DataSourceBuilder.create().build();
+	}
 }

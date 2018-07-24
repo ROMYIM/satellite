@@ -14,6 +14,12 @@ spring:
 
 
   datasource:
+    informationSchema:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://38.75.137.228:10006/information_schema?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true
+      username: root
+      password: uyAou673TYEuy@e63Ytw
+
     epg:
       driver-class-name: com.mysql.jdbc.Driver
       url: jdbc:mysql://38.75.137.228:10006/epg?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true
