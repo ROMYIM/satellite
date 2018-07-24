@@ -1,17 +1,31 @@
 package com.iptv.satellite.domain.db;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  * DataSourceModel
  */
 public class DataSourceBean {
 
     private Integer id;
+
+    @NotEmpty(message = "数据库名不能为空")
     private String beanName;
+
+    @NotEmpty(message = "数据库连接地址不能为空")
     private String url;
+
+    @NotEmpty(message = "用户名不能为空")
     private String userName;
+
+    @NotEmpty(message = "密码不能为空")
     private String password;
+
     private final String driverClassName;
+
     private static final String URL_PREFIX = "jdbc:mysql://";
+
+    private static final String URL_SUFFIX = "useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true";
 
     /**
      * @return the id
@@ -95,10 +109,17 @@ public class DataSourceBean {
     }
 
     public void formatUrl() {
+        StringBuffer stringBuffer = new StringBuffer();
         if (url != null && url.length() > 0) {
             if (!url.contains(URL_PREFIX)) {
-                url = URL_PREFIX + url; 
+                stringBuffer.append(URL_PREFIX).append(url);
             }
+            if (url.contains("?")) {
+                stringBuffer.append('&').append(URL_SUFFIX);
+            } else {
+                stringBuffer.append('?').append(URL_SUFFIX);
+            }
+            url = stringBuffer.toString();
         }
     }
 

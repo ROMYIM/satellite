@@ -59,54 +59,54 @@ public class FormatUtil {
 		return period * 1000 * 60 * 60;
 	}
 	
-	public static String getCmsAirStartTime(String epgStartTime) throws ParseException {
-		long timeStamp = DATE_FORMATTER.parse(epgStartTime).getTime() + 28800000;
-		return DATE_FORMATTER.format(new Date(timeStamp));
+	public static String getCmsAirStartTime(String epgStartTime, SimpleDateFormat dateFormatter) throws ParseException {
+		long timeStamp = dateFormatter.parse(epgStartTime).getTime() + 28800000;
+		return dateFormatter.format(new Date(timeStamp));
 	}
 	
-	public static String getCmsAirEndTime(String cmsAirStartTime, Integer duration) throws ParseException {
-		long timeStamp = DATE_FORMATTER.parse(cmsAirStartTime).getTime() + duration * 1000;
-		return DATE_FORMATTER.format(new Date(timeStamp));
+	public static String getCmsAirEndTime(String cmsAirStartTime, Integer duration, SimpleDateFormat dateFormatter) throws ParseException {
+		long timeStamp = dateFormatter.parse(cmsAirStartTime).getTime() + duration * 1000;
+		return dateFormatter.format(new Date(timeStamp));
 	}
 	
 	public static String getCmsStartDate(String cmsAirStartTime) {
-		StringBuffer stringBuffer = new StringBuffer(19);
-		stringBuffer.append(cmsAirStartTime.substring(0, 10)).append(" ").append("00:00:00");
-		return stringBuffer.toString();
+		StringBuilder stringBuilder = new StringBuilder(19);
+		stringBuilder.append(cmsAirStartTime.substring(0, 10)).append(" ").append("00:00:00");
+		return stringBuilder.toString();
 	}
 	
 	public static String getCmsStartTime(String cmsAirStartTime) {
-		return new StringBuffer(6)
+		return new StringBuilder(6)
 				.append(cmsAirStartTime.substring(11, 13))
 				.append(cmsAirStartTime.substring(14, 16))
 				.append(cmsAirStartTime.substring(17)).toString();
 	}
 	
 	public static String getCmsDuration(Integer duration) {
-		StringBuffer stringBuffer = new StringBuffer(6);
-		stringBuffer.append(String.format("%02d", duration / 3600)).append(String.format("%02d", duration % 3600 / 60)).append(String.format("%02d", duration % 60));
-		return stringBuffer.toString();
+		StringBuilder stringBuilder = new StringBuilder(6);
+		stringBuilder.append(String.format("%02d", duration / 3600)).append(String.format("%02d", duration % 3600 / 60)).append(String.format("%02d", duration % 60));
+		return stringBuilder.toString();
 	}
 	
 	public static ScheduleBean epgToCms(EpgBean epgBean) {
 		ScheduleBean scheduleBean = new ScheduleBean();
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
 			scheduleBean.setProgramName(epgBean.getProgramName());
 			scheduleBean.setReleaseStatus(1);
-			scheduleBean.setAirStartTime(getCmsAirStartTime(epgBean.getStartTime()));
-			scheduleBean.setAirEndTime(getCmsAirEndTime(scheduleBean.getAirStartTime(), epgBean.getDuration()));
-			scheduleBean.setStartDate(getCmsStartDate(scheduleBean.getAirStartTime()));
 			scheduleBean.setDuration(getCmsDuration(epgBean.getDuration()));
 			String description = (epgBean.getExtendedDescription() == null || epgBean.getExtendedDescription().length() <= 0) ? epgBean.getShortDescription() : epgBean.getExtendedDescription();
 			scheduleBean.setDescription(description);
-			scheduleBean.setStartTime(getCmsStartTime(scheduleBean.getAirStartTime()));
 			scheduleBean.setLanguage(epgBean.getLanguage());
 			scheduleBean.setSatellite(epgBean.getSatellite());
 			scheduleBean.setChannelCode(epgBean.getChannelName());
-			scheduleBean.setReleaseTime(DATE_FORMATTER.format(new Date()));
+			scheduleBean.setReleaseTime(dateFormatter.format(new Date()));
 			scheduleBean.setStatus(1);
-		} catch (ParseException e) {
-			
+			scheduleBean.setAirStartTime(getCmsAirStartTime(epgBean.getStartTime(), dateFormatter));
+			scheduleBean.setAirEndTime(getCmsAirEndTime(scheduleBean.getAirStartTime(), epgBean.getDuration(), dateFormatter));
+			scheduleBean.setStartDate(getCmsStartDate(scheduleBean.getAirStartTime()));
+			scheduleBean.setStartTime(getCmsStartTime(scheduleBean.getAirStartTime()));
+		} catch (ParseException | NumberFormatException e) {
 			e.printStackTrace();
 		}
 		return scheduleBean;

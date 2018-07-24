@@ -43,6 +43,6 @@
 	</select>
 	
 	<select id ="selectFirstFromEpg" resultType="java.math.BigInteger">
-		select s.id from 1055E as s where exists (select id from 1055E where id > 0) limit 1
+		select count(id) from 1055E
 	</select>
 </mapper>

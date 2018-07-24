@@ -126,7 +126,7 @@
 	</select>
 	
 	<select id="selectFirstFromSchedule" resultType="int">
-		select s.id from schedule as s where exists (select id from schedule where id > 0) limit 1
+		select count(id) from schedule
 	</select>
 	
 <!-- 	<delete id="deleteByScheduleId" parameterType="java.util.List"> -->
