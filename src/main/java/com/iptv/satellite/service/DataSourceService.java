@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.iptv.satellite.dao.ScheduleDAO;
 import com.iptv.satellite.dao.datasource.DataSourceMapper;
+import com.iptv.satellite.dao.informationSchema.InformationSchemaMapper;
 import com.iptv.satellite.domain.db.DataSourceBean;
 import com.iptv.satellite.util.BeanUtil;
 
@@ -30,6 +31,8 @@ public class DataSourceService {
 
     private final DataSourceMapper dataSourceMapper;
 
+    private final InformationSchemaMapper informationSchemaMapper;
+
     private final ApplicationContext applicationContext;
 
     private volatile List<String> runtimeServiceList;
@@ -42,15 +45,28 @@ public class DataSourceService {
     }
 
     @Autowired
-    public DataSourceService(DataSourceMapper dataSourceMapper, ApplicationContext applicationContext) {
+    public DataSourceService(DataSourceMapper dataSourceMapper, InformationSchemaMapper informationSchemaMapper, ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
         this.dataSourceMapper = dataSourceMapper;
+        this.informationSchemaMapper = informationSchemaMapper;
         try {
             BeanUtil.initBeanFactory(this.applicationContext);
 			startUpService();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    }
+
+    public List<String> getEpgTableNameList() {
+        return informationSchemaMapper.selectEpgTablesFromInformationSchema();
+    }
+
+    public List<String> getDataSourceList() {
+		List<String> dataSourceList = new ArrayList<>(runtimeServiceList.size());
+		for (String serviceName : runtimeServiceList) {
+			dataSourceList.add(serviceName.replace("ScheduleService", ""));
+        }
+        return dataSourceList;
     }
 
     public String addDataSource(DataSourceBean model) {

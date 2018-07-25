@@ -5,7 +5,6 @@ package com.iptv.satellite.controller;
 *@description:   日志控制层，对日志相关的逻辑操作
 */
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,15 +53,13 @@ public class HomeController {
 	@RequestMapping("/")
 	public ModelAndView index(ModelAndView modelAndView) {
 		List<LogBean> logs = logService.findAllLogs(0, 20);
-		List<String> serviceStrings = taskService.getDataSourceService().getRuntimeServiceList();
-		List<String> dataSourceList = new ArrayList<>(serviceStrings.size());
-		for (String serviceName : serviceStrings) {
-			dataSourceList.add(serviceName.replace("ScheduleService", ""));
-		}
+		List<String> dataSourceList = taskService.getDataSourceService().getDataSourceList();
+		List<String> epgTableNameList = taskService.getEpgTableNameList();
 		int pageCount = logService.findLogsPageCount("", "");
 		modelAndView.addObject("pageCount", pageCount);
 		modelAndView.addObject("timingTime", taskService.getTimingTime());
 		modelAndView.addObject("intervalTime", taskService.getIntervalTime());
+		modelAndView.addObject("epgTableNames", epgTableNameList);
 		modelAndView.addObject("logList", logs).addObject("dataSources", dataSourceList).setViewName("index");
 		return modelAndView;
 	}
@@ -105,8 +102,7 @@ public class HomeController {
 	public ResponseMessage setCron(String timingTime, String intervalTime) {
 		LOGGER.info("定时时间:" + timingTime);
 		LOGGER.info("间隔时间:" + intervalTime);
-		ResponseMessage message =  new ResponseMessage();
-		message.setMessage("操作失败");
+		ResponseMessage message =  new ResponseMessage("操作失败");
 		StringBuffer messagStringBuffer = new StringBuffer(14);
 		if (timingTime.length() > 0) {	
 			if (taskService.startTimingTask(timingTime)) {
@@ -119,6 +115,15 @@ public class HomeController {
 			}
 		}
 		message.setMessage(messagStringBuffer.toString());
+		return message;
+	}
+
+	@RequestMapping(value = "resetTask", method = RequestMethod.POST)
+	public ResponseMessage resetTask() {
+		ResponseMessage message = new ResponseMessage("操作失败");
+		if (taskService.resetTask()) {
+			message.setMessage("重置成功");
+		}
 		return message;
 	}
 }

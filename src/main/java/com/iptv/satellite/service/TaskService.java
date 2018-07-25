@@ -2,7 +2,7 @@ package com.iptv.satellite.service;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -42,8 +42,9 @@ public class TaskService {
 	/**
 	 * 存放epg各个表的临时变量
 	 * 存放epg数据源中各个表的表名（便于计算schedule的satellite）以及当前最新数据的id（便于下次更新库的查询）
+	 * 存放epg各表中要更新的数据以及更新标志
 	 */
-	private static EpgTableModel[] epgTableModels = new EpgTableModel[14];
+	private static EpgTableModel[] epgTableModels;
 	
 	/**
 	 * 对epg数据源几个卫星表操作的接口
@@ -96,11 +97,6 @@ public class TaskService {
 	 * 记录定时时间
 	 */
 	private String timingTime;
-
-	/**
-	 * 日历，计算定时与间隔运行时间的相差时间
-	 */
-	private Calendar calendar = Calendar.getInstance();
 	
 	/**
 	 * 间隔任务
@@ -113,26 +109,32 @@ public class TaskService {
 	private Runnable timingTask = new UpdateCmsTask();
 	
 	/**
-	 * 静态代码块
 	 * epgTableModel初始化
 	 */
-	private static void initEpgTableModels() {
-		epgTableModels[0] = new EpgTableModel("1005E");
-		epgTableModels[1] = new EpgTableModel("1055E");
-		epgTableModels[2] = new EpgTableModel("130E");
-		epgTableModels[3] = new EpgTableModel("1320E");
-		epgTableModels[4] = new EpgTableModel("160E");
-		epgTableModels[5] = new EpgTableModel("192E");
-		epgTableModels[6] = new EpgTableModel("300W");
-		epgTableModels[7] = new EpgTableModel("430W");
-		epgTableModels[8] = new EpgTableModel("580W");
-		epgTableModels[9] = new EpgTableModel("6875C");
-		epgTableModels[10] = new EpgTableModel("700W");
-		epgTableModels[11] = new EpgTableModel("70W");
-		epgTableModels[12] = new EpgTableModel("850E");
-		epgTableModels[13] = new EpgTableModel("910W");
+	public void initEpgTableModels() {
+		List<String> epgTableNameList = dataSourceService.getEpgTableNameList();
+		epgTableModels = new EpgTableModel[epgTableNameList.size()];
+		for (int i = 0; i < epgTableNameList.size(); i++) {
+			epgTableModels[i] = new EpgTableModel(epgTableNameList.get(i));
+		}
 	}
 
+	/**
+	 * 获取epg库中的表名列表
+	 */
+	public List<String> getEpgTableNameList() {
+		List<String> epgTableNameList = new ArrayList<>();
+		if (epgTableModels != null && epgTableModels.length > 0) {
+			for (EpgTableModel epgTableModel : epgTableModels) {
+				epgTableNameList.add(epgTableModel.getTableName());
+			}
+		}
+		return epgTableNameList;
+	}
+
+	/**
+	 * 构造器。添加各种服务的依赖
+	 */
 	@Autowired
 	public TaskService(ILogService logService, IEpgService epgService, DataSourceService dataSourceService, 
 			ThreadPoolTaskScheduler taskScheduler, Executor taskExecutor) {
@@ -181,20 +183,16 @@ public class TaskService {
 	public boolean startIntervalTask(String intervalTime) {  
 		if (this.intervalTime == null || !this.intervalTime.equals(intervalTime)) {
 			try {
-				long period = FormatUtil.timeToPeriod(intervalTime);                                                    //间隔的时间转为毫秒， 只取小时部分做转化
+				//计算间隔任务首次执行时
+				long period = FormatUtil.timeToPeriod(intervalTime);                                                    
 				Date firstExecuteTime = new Date(System.currentTimeMillis() + period);
-				calendar.setTime(firstExecuteTime);
-				int firstExecuteMinute = calendar.get(Calendar.MINUTE);
-				int firstExecuteHour = calendar.get(Calendar.HOUR_OF_DAY);
-				int timingHour = Integer.valueOf(timingTime.substring(0, 2));
-				int timingMinute = Integer.valueOf(timingTime.substring(3));
-				stopTask(intervalSchedule);                                                                             //先中断当前的间隔任务
-				if (Math.abs(firstExecuteHour - timingHour) > 0 || Math.abs(firstExecuteMinute - timingMinute) > 5) {
-					intervalSchedule = taskScheduler.scheduleAtFixedRate(intervalTask, firstExecuteTime, period);
-				}
+				//停止当前间隔任务
+				stopTask(intervalSchedule);   
+				//按设置的时间重新启动间隔任务                                                                     
+				intervalSchedule = taskScheduler.scheduleAtFixedRate(intervalTask, firstExecuteTime, period);
 				this.intervalTime = intervalTime;
 			} catch (InterruptedException | ExecutionException | NumberFormatException e) {
-				LOGGER.debug(e.getMessage());                                                                                //中断失败直接返回
+				LOGGER.debug(e.getMessage());                                                                                
 				return false;
 			}
 		}
@@ -207,16 +205,20 @@ public class TaskService {
 	 * @return    启动任务的结果
 	 */
 	public boolean startTimingTask(String timingTime) {
-		String timingCron = FormatUtil.timeToCron(timingTime, CronType.TIMING);                          //生成cron表达式
+		//生成cron表达式
+		String timingCron = FormatUtil.timeToCron(timingTime, CronType.TIMING);                          
 		try {
-			stopTask(timingSchedule);                                                                                                                           //先中断当前的定时任务
+			//先中断当前的定时任务
+			stopTask(timingSchedule);                                                                                                                           
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();                                                                                                                                        //中断失败直接返回
+			//中断失败直接返回
+			e.printStackTrace();                                                                                                                                        
 			return false;
 		}
 		
-		timingSchedule = taskScheduler.schedule(timingTask, new Trigger() {                 //以触发器的形式开启新的定时任务
-			                                                                                                                                                                                    
+		//以触发器的形式开启新的定时任务
+		timingSchedule = taskScheduler.schedule(timingTask, new Trigger() {                 
+			//根据表达式计算下次执行时间                                                                                                                                                                              
 			@Override                                                                                                                                                          //根据执行时间的cron表达式生成执行时间
 			public Date nextExecutionTime(TriggerContext triggerContext) {
 				CronTrigger trigger = new CronTrigger(timingCron);
@@ -224,16 +226,23 @@ public class TaskService {
 				return nextExcutionTime;
 			}
 		});
+		//接受前段设置的时间
 		this.timingTime = timingTime;
 		return true;
 	}
 
+	/**
+	 * 重置任务
+	 * @return 重置任务的结果
+	 */
 	public boolean resetTask() {
 		try {
+			//停止当期任务，时间重置
 			stopTask(timingSchedule);
 			stopTask(intervalSchedule);
 			intervalTime = null;
 			timingTime = null;
+			//重新初始化获取epg数据中的表集合
 			initEpgTableModels();
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
@@ -260,7 +269,9 @@ public class TaskService {
 		private static final int EACH_INSERT_COUNT = 1000;
 		
 		/**
-		 * 针对epg的某一个表对（cms或p2p）的schedule表进行更新
+		 * 针对epg的某一个表对远程数据库的的schedule表进行更新
+		 * 先删除旧数据，再插入新数据
+		 * 计算每一次操作的时间和时长，记录到日志表中
 		 * @param scheduleService              schedule表的操作接口
 		 * @param epgs                           需要插入的epg新数据  
 		 * @param epgModels                用于匹配需要删除的条件数据
@@ -283,8 +294,16 @@ public class TaskService {
 		 * 任务执行的程序
 		 */
 		@Override
-		public void run() {     
-			                 
+		public void run() {   
+			
+			long totalStartTime = System.currentTimeMillis();                                                                                                                                                    
+			LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(totalStartTime)); 
+			
+			/**
+			 * 根据当前最大id值与记录中的最大id值进行对比
+			 * 查询epg各表中是否有数据更新
+			 * 有新数据就存入并设置更新标志
+			 */
 			for (int i = 0; i < epgTableModels.length; i++) {                                                                                                                                                                               
 				String tableName = epgTableModels[i].getTableName();
 				BigInteger maxId = epgService.findMaxIdFromEpg(tableName);  
@@ -303,10 +322,9 @@ public class TaskService {
 			}
 			
 			/**
-			 * 如果该表有数据更新
-			 * 先查询表中新的数据以及新数据中需要删除的条件数目
-			 * 分别对各数据库进行更新操作，并生成相应的日志
-			 * 把日志添加到日志表中
+			 * 根据每一个远程数据库进行更新
+			 * 每一个远程数据库更新分配一个线程
+			 * 对每一个远程数据库更新都会根据epgTableModel查询epg各表是否有数据更新
 			 */
 			for (String serviceName : dataSourceService.getRuntimeServiceList()) {
 				ICmsService scheduleService = BeanUtil.getBean(serviceName, ScheduleService.class);
@@ -315,8 +333,8 @@ public class TaskService {
 					
 						@Override
 						public void run() {
-							long totalStartTime = System.currentTimeMillis();                                                                                                                                                    
-							LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(totalStartTime));   
+							long startTime = System.currentTimeMillis();                                                                                                                                                    
+							LOGGER.info("开始时间：" + new SimpleDateFormat("HH:mm:ss:SSS").format(startTime));   
 							for (EpgTableModel epgTableModel : epgTableModels) {
 								if (epgTableModel.getUpdateFlag()) {
 									updateCms(scheduleService, epgTableModel.getEpgBeans(), epgTableModel.getEpgModels(), new LogBean(epgTableModel.getTableName(), scheduleService.getDataSourceName()));
@@ -327,9 +345,9 @@ public class TaskService {
 									scheduleService.findFirstFromSchedule();
 								}
 							}
-							long totalEndTime = System.currentTimeMillis();                                                                                                                                                             //结束时间
-							long totalDuration = totalEndTime - totalStartTime;                                                                                                                                                        //计算用时
-							LOGGER.info(scheduleService.getDataSourceName() + "持续时间：" + new SimpleDateFormat("mm:ss.SSS").format(totalDuration));
+							long endTime = System.currentTimeMillis();                                                                                                                                                             //结束时间
+							long duration = endTime - startTime;                                                                                                                                                        //计算用时
+							LOGGER.info(scheduleService.getDataSourceName() + "持续时间：" + new SimpleDateFormat("mm:ss.SSS").format(duration));
 						}
 					});
 				} else {

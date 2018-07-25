@@ -7,6 +7,14 @@ package com.iptv.satellite.domain.model;
 public class ResponseMessage {
 	private String message;
 
+	public ResponseMessage() {
+		super();
+	}
+
+	public ResponseMessage(String message) {
+		this.message = message;
+	}
+
 	public String getMessage() {
 		return message;
 	}

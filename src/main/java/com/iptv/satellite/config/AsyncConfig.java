@@ -27,7 +27,7 @@ public class AsyncConfig extends AsyncConfigurerSupport{
         taskExecutor.setCorePoolSize(5);
         taskExecutor.setMaxPoolSize(10);
         taskExecutor.setThreadNamePrefix("Update-Schedule-");
-        taskExecutor.setQueueCapacity(20);
+		taskExecutor.setQueueCapacity(20);
         taskExecutor.setAwaitTerminationSeconds(30 * 60);
 		return taskExecutor;
 	}
@@ -46,7 +46,7 @@ public class AsyncConfig extends AsyncConfigurerSupport{
 	@Bean("taskScheduler")
 	public ThreadPoolTaskScheduler createTaskScheduler() {
 		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-		taskScheduler.setPoolSize(5);
+		taskScheduler.setPoolSize(1);
 		return taskScheduler;
 	}
 

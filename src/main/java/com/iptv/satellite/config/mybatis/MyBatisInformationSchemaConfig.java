@@ -16,10 +16,10 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
  * MyBatisInformationSchemaConfig
  */
 @Configuration
-@MapperScan(basePackages = "com.iptv.satellite.dao.informationSchema", sqlSessionFactoryRef = "informationSqlSessionFactory")
+@MapperScan(basePackages = "com.iptv.satellite.dao.informationSchema", sqlSessionFactoryRef = "informationSchemaSqlSessionFactory")
 public class MyBatisInformationSchemaConfig {
 
-    @Resource(name = "informationSchema")
+    @Resource(name = "informationSchemaDs")
     private DataSource dataSource;
 
     @Bean(name = "informationSchemaSqlSessionFactory")

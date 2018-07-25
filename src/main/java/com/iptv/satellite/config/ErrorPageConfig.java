@@ -19,9 +19,9 @@ public class ErrorPageConfig {
         
             @Override
             public void customize(ConfigurableEmbeddedServletContainer container) {
-                container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/error"));
-                container.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error"));
-                container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/error"));
+                container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/404.html"));
+                container.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/500.html"));
+                container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/401.html"));
             }
         };
     }

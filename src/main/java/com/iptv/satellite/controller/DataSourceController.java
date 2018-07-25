@@ -10,10 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * DataSourceController
@@ -40,11 +40,11 @@ public class DataSourceController {
     }
 
     @RequestMapping("/add")
-    public String addDataSource(@Valid DataSourceBean model, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String addDataSource(@Valid DataSourceBean dataSource, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            LOGGER.info(model.toString());
-            model.formatUrl();
-            if (dataSourceService.addService(model)) {
+            LOGGER.info(dataSource.toString());
+            dataSource.formatUrl();
+            if (dataSourceService.addService(dataSource)) {
                 if (taskService.resetTask()) {
                     return "redirect:/";
                 }
@@ -54,7 +54,8 @@ public class DataSourceController {
             for (ObjectError error : result.getAllErrors()) {
                 stringBuffer.append(error.getDefaultMessage()).append('\n');
             }
-            redirectAttributes.addFlashAttribute("message", stringBuffer.toString());
+            model.addAttribute("message", stringBuffer.toString());
+            // redirectAttributes.addFlashAttribute("message", stringBuffer.toString());
         }
         return "redirect:/error";
     }
