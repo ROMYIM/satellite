@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import com.iptv.satellite.constant.CronType;
@@ -48,13 +49,21 @@ public class FormatUtil {
 		}
 		return stringBuffer.toString();
 	}
+
+	public static Date timeToDate(String timeString) {
+		int hour = Integer.valueOf(timeString.substring(0, 2));
+		int minute = Integer.valueOf(timeString.substring(3));
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hour, minute);
+		return new Date(calendar.getTimeInMillis());
+	}
 	
 	/**
 	 * 把时间字符串转为指定的时间戳，针对于间隔任务，只截取小时字段做转换
 	 * @param time  时间字符串
 	 * @return 返回的时间戳
 	 */
-	public static long timeToPeriod(String time) throws NumberFormatException{
+	public static long hourToPeriod(String time) throws NumberFormatException{
 		Long period = Long.valueOf(time);
 		return period * 1000 * 60 * 60;
 	}

@@ -12,13 +12,9 @@ import java.util.concurrent.ScheduledFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
-import com.iptv.satellite.constant.CronType;
 import com.iptv.satellite.domain.db.EpgBean;
 import com.iptv.satellite.domain.db.LogBean;
 import com.iptv.satellite.domain.model.EpgModel;
@@ -181,53 +177,42 @@ public class TaskService {
 	 * @return  启动任务的结果。成功为true，失败为false
 	 */
 	public boolean startIntervalTask(String intervalTime) {  
-		if (this.intervalTime == null || !this.intervalTime.equals(intervalTime)) {
+		try {
+			//计算间隔任务首次执行时
+			long period = FormatUtil.hourToPeriod(intervalTime);                                                    
+			Date firstExecuteTime = new Date(System.currentTimeMillis() + period);
+			//停止当前间隔任务
+			stopTask(intervalSchedule);   
+			//按设置的时间重新启动间隔任务                                                                     
+			intervalSchedule = taskScheduler.scheduleAtFixedRate(intervalTask, firstExecuteTime, period);
+			this.intervalTime = intervalTime;
+		} catch (InterruptedException | ExecutionException | NumberFormatException e) {
+			LOGGER.debug(e.getMessage());                                                                                
+			return false;
+		}
+		return true;                                                      
+	}  
+	
+	/**
+	 * 启动定时任务
+	 * @param timingTime 设置的定时时间
+	 * @return 启动任务的结果
+	 */
+	public boolean startTimingTask(String timingTime) {
+		if (this.timingTime == null || !this.timingTime.equals(timingTime)) {
 			try {
-				//计算间隔任务首次执行时
-				long period = FormatUtil.timeToPeriod(intervalTime);                                                    
-				Date firstExecuteTime = new Date(System.currentTimeMillis() + period);
-				//停止当前间隔任务
-				stopTask(intervalSchedule);   
-				//按设置的时间重新启动间隔任务                                                                     
-				intervalSchedule = taskScheduler.scheduleAtFixedRate(intervalTask, firstExecuteTime, period);
-				this.intervalTime = intervalTime;
+				//转换定时的时间，把时间间隔设置为24小时
+				Date firstExecuteTime = FormatUtil.timeToDate(timingTime);
+				long period = FormatUtil.hourToPeriod("24");
+				//重新启动任务
+				stopTask(timingSchedule);
+				timingSchedule = taskScheduler.scheduleAtFixedRate(timingTask, firstExecuteTime, period);
+				this.timingTime = timingTime;
 			} catch (InterruptedException | ExecutionException | NumberFormatException e) {
-				LOGGER.debug(e.getMessage());                                                                                
+				LOGGER.info(e.getMessage());
 				return false;
 			}
 		}
-		return true;                                                      
-	}                                                                                  
-
-	/**
-	 * 启动定时任务
-	 * @param timingCron  执行时间的cron表达式
-	 * @return    启动任务的结果
-	 */
-	public boolean startTimingTask(String timingTime) {
-		//生成cron表达式
-		String timingCron = FormatUtil.timeToCron(timingTime, CronType.TIMING);                          
-		try {
-			//先中断当前的定时任务
-			stopTask(timingSchedule);                                                                                                                           
-		} catch (InterruptedException | ExecutionException e) {
-			//中断失败直接返回
-			e.printStackTrace();                                                                                                                                        
-			return false;
-		}
-		
-		//以触发器的形式开启新的定时任务
-		timingSchedule = taskScheduler.schedule(timingTask, new Trigger() {                 
-			//根据表达式计算下次执行时间                                                                                                                                                                              
-			@Override                                                                                                                                                          //根据执行时间的cron表达式生成执行时间
-			public Date nextExecutionTime(TriggerContext triggerContext) {
-				CronTrigger trigger = new CronTrigger(timingCron);
-				Date nextExcutionTime = trigger.nextExecutionTime(triggerContext);
-				return nextExcutionTime;
-			}
-		});
-		//接受前段设置的时间
-		this.timingTime = timingTime;
 		return true;
 	}
 
